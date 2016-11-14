@@ -1,7 +1,7 @@
 function [] = eeganalysis( csvname )
 %EEGANALYSIS Main analysis script. Calls stuff
 %and reads stuff.
-%By André Sevenius Nilsen & Benjamin Thürer
+%By Andrï¿½ Sevenius Nilsen & Benjamin Thï¿½rer
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 
@@ -14,8 +14,8 @@ for sbj = 1:size(fldnames1,1)
     for ses = 1:size(fieldnames(eval(['param.' fldnames1{sbj}])),1)
         fldnames2 = fieldnames(eval(['param.' fldnames1{sbj}]));
         fldnames3 = fieldnames(eval(['param.' fldnames1{sbj} '.' fldnames2{ses}]));
-        idx_src1 = find(strcmp(fldnames3,'vhdrsource'));
-        idx_src2 = find(strcmp(fldnames3,'downsample_rate'));
+        idx_src1 = find(strcmp(fldnames3,'start_of_function_list'));
+        idx_src2 = find(strcmp(fldnames3,'end_of_function_list'));
         
         data_struct = eval(['param.' fldnames1{sbj} '.' fldnames2{ses}]);
         
