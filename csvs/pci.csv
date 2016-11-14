@@ -1,0 +1,57 @@
+Subjects;s101;;;;;;;;;;;;;;;;;Comments
+session;s1;;;;;;;;;;;;;;;;;
+experiment;pci;;;;;;;;;;;;;;;;;
+age;20;;;;;;;;;;;;;;;;;
+sex;1;;;;;;;;;;;;;;;;;
+iq;100;;;;;;;;;;;;;;;;;
+save_folder;0;;;;;;;;;;;;;;;;;%% 0=save in the same folder as eeg-header file, else=save in the folder provided
+lftsource;path_to_file;;;;;;;;;;;;;;;;;
+vhdrsource;C:\Users\Promotion\04_Studie-IV_PCI\Data\Aniko\103_20160906_0004_lpar.vhdr;;;;;;;;;;;;;;;;;
+UiO_TMS_correction;1;;;;;;;;;;;;;;;;;
+UiO_preprocessing;2;;;;;;;;;;;;;;;;;
+UiO_trials;3;;;;;;;;;;;;;;;;;
+UiO_pca;0;;;;;;;;;;;;;;;;;
+UiO_ica;0;;;;;;;;;;;;;;;;;
+UiO_ica_cleaning;0;;;;;;;;;;;;;;;;;
+UiO_inverse_model;0;;;;;;;;;;;;;;;;;
+UiO_pci;0;;;;;;;;;;;;;;;;;
+UiO_save;4;;;;;;;;;;;;;;;;;
+jjkj;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+;;;;;;;;;;;;;;;;;;
+%%This is line 34. Do not cross%%;;;;;;;;;;;;;;;;;;
+%%Preprocessing_parameters%%;;;;;;;;;;;;;;;;;;
+downsample_rate;1000;;;;;;;;;;;;;;;;;%what do you want to downsample to, in hz
+interpolate_lower_tms;-1;;;;;;;;;;;;;;;;;%interpolation lower end
+interpolate_higher_tms;10;;;;;;;;;;;;;;;;;%interpolation higher end
+highpassfilter;1;;;;;;;;;;;;;;;;;%higphass filter in hz (bandpass edge. cut-off frequency is value - 0.5)
+lowpassfilter;80;;;;;;;;;;;;;;;;;%lowpassfilter in hz (bandpass edge. Cut-off frequency is value + 0.5)
+linenoise_frequency;50;;;;;;;;;;;;;;;;;%linenoise removal around hz
+trial_start;-1000;;;;;;;;;;;;;;;;;%start epoch in ms
+trial_end;1000;;;;;;;;;;;;;;;;;%end epoch in ms
+trial_threshold;500;;;;;;;;;;;;;;;;;%%if trial rejection automatic: rejection threshold in µV
+re_referencing;1;;;;;;;;;;;;;;;;;%%0= nor re-referencing, 1 = avg reference, otherwise: it references to that channel (ex. FP1)
+correction_sensitivity;19;;;;;;;;;;;;;;;;;%%1=liberal, 100=very strict, 19=good choice
+trial_rejection_type;1;;;;;;;;;;;;;;;;;%%1=automatic,2=manual
+;;;;;;;;;;;;;;;;;;
+%%Automatic_rejection_parameters%%;;;;;;;;;;;;;;;;;;
+tms_interpolation;1;;;;;;;;;;;;;;;;;%%1=automatic,2=manual by inspection,3=manual by csv-input
+cleaning_artifacts;1;;;;;;;;;;;;;;;;;%%1=automatic by using clean_rawdata, 0=no cleaning
+channel_rejection;1;;;;;;;;;;;;;;;;;%%1=automatic by using clean_rawdata, 2=manual by visual inspection, 0=no channel rejection
+trial_rejection;1;;;;;;;;;;;;;;;;;%%1=automatic by threshold parameter (above), 2=manual by visual inspection
+ica_rejection_tool;1;;;;;;;;;;;;;;;;;%%1=MARA, 2=Adjust, 3=other
+trial_rejection_threshold;500;;;;;;;;;;;;;;;;;%%Absolute number of rejection (+/-500 uV)
+trials_random;2;;;;;;;;;;;;;;;;;
