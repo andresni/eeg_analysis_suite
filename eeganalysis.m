@@ -10,6 +10,7 @@ param=readcsv(csvname);
 
 fldnames1 = fieldnames(param);
 
+%%For each subject and each session
 for sbj = 1:size(fldnames1,1)
     for ses = 1:size(fieldnames(eval(['param.' fldnames1{sbj}])),1)
         fldnames2 = fieldnames(eval(['param.' fldnames1{sbj}]));
