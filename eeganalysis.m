@@ -25,7 +25,7 @@ for sbj = 1:size(fldnames1,1)
         % session which should be processed
         data_struct = eval(['param.' fldnames1{sbj} '.' fldnames2{ses}]);
         
-        % finding the right order (n) of the functions. This is complex
+        % finding the right order (n) of the functions. This is complicated
         % because numbers are strings and can have one or two characters.
         % In addition numbers can be delimited by ',' if the function
         % should be run several times

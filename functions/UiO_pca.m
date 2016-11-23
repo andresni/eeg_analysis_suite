@@ -56,7 +56,7 @@ end
 lastPC = find(diff(perVar > 99.9))+1;
 EEG.lastPC = lastPC;
 
-% keep the 99% components and multiply them with the original data
+% keep the 99.9% components and multiply them with the original data
 % then decompress the data
 PostPCAData = VecData(:,1:lastPC)' * ObsData;
 DecompData = (PostPCAData' * VecData(:,1:lastPC)')';
@@ -67,7 +67,7 @@ end
 
 EEG.data = postCompData;
 
-disp('Data compressed to ' num2str(lastPC) ' principal components');
+disp(['Data compressed to ' num2str(lastPC) ' principal components']);
 
 % loc file entry
 locFile{end+1} = {'after_pca',['data is compressed to ' num2str(lastPC) ' principal components which explain ' ...
