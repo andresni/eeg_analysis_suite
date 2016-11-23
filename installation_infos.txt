@@ -1,0 +1,15 @@
+Installation infos for UiO_eeganalysis
+
+In principle you only have to do the following:
+1.       download the whole folder structure (UiO_eeganalysis). Maybe unzip the folder
+2.       UiO_eeganalysis into a folder without any special signs in the whole folder path (e.g. ø). Do the same with your data folder which has your EEG and lft data.
+3.       In Matlab set path to the folder and subfolders of UiO_eeganalysis
+4.       Change in the csvfile (it is in the privat folder!) the paths at least for the .vhdr file and .lft file (the letter if you want to do pci)
+5.	 If you do not have eeglab in your matlabpath do so. You can download it here: https://sccn.ucsd.edu/eeglab/
+ 
+Known problems, so far:
+1.       You are using a very old EEGlab. Then you will have an error in the ‘pop_resample’ function. Please download newer version: https://sccn.ucsd.edu/eeglab/
+2.       If you use fieldtrip, please put fieldtrip in your matlab path to the buttom. Some of the fieldtrip functions are called the same as some matlab functions. This is a problem for matlab!
+3.       If EEGlab is not in your path. Please add only the top folder of eeglab to the matlab path and ‘run’ eeglab once. Do NOT add eeglab with subfolders to the matlab path!
+4.	 If you create your own csvfile, make sure you use ';' as delimiter
+
