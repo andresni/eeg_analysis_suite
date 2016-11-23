@@ -49,7 +49,7 @@ elseif str2double(data_struct.trial_rejection) == 2
     goodTrial = [];
     badTrial = [];
 
-    % plot the average over channels for each trial and distinguish between good
+    % plot each trial over channels and distinguish between good
     % and bad trials according to the mouse / space click
     for Ei = 1:size(EEG.data,3)
         CutTrial = squeeze(EEG.data(:,:,Ei));
@@ -78,8 +78,9 @@ elseif str2double(data_struct.trial_rejection) == 2
         close(h)
     end
 
-    % plot the average for each trial again and show the actual
+    % plot all channels for each trial again and show the actual
     % marking of the trial. Press space if you changed your mind
+    val = [];
     for Ei = 1:size(EEG.data,3)
         if find(goodTrial==Ei)
             Stigma = 'good';
@@ -98,10 +99,17 @@ elseif str2double(data_struct.trial_rejection) == 2
         plot(EEG.times(idx(1):idx(2)),CutTrial(:,idx(1):idx(2)),'color',[0,0,0]);
         grid
         title({['Trial ' int2str(Ei) ' marked as ' Stigma] ; ...
-            ['if you want to change the mark (regardless of direction g-->b; b-->g) press space']});
+            ['if you want to change the mark (regardless of direction g-->b; b-->g) press space'] ; ...
+            ['if you want to skip this additional loop press: e']});
         set(gca,'YTick',[]);
         axis([min(EEG.times(idx(1):idx(2))) max(EEG.times(idx(1):idx(2))) -multPl n(end)+multPl]);
         xlabel('Time (ms)');
+        
+        % breaks loop if "e" is pressed
+        val=double(get(h,'CurrentCharacter'));
+        if val == 101
+            break
+        end
         
         button = waitforbuttonpress;
         if button ~= 0

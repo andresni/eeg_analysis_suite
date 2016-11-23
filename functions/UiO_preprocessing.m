@@ -109,7 +109,7 @@ if str2double(data_struct.cleaning_artifacts) == 1
         goodChan = [];
         badChan = [];
         
-        % plot the average for each channel and distinguish between good
+        % plot for each channel all trials and distinguish between good
         % and bad channels according to the mouse / space click
         for Ei = 1:size(EEGN.data,1)
             CutTrial = squeeze(EEGN.data(Ei,:,:));
@@ -119,26 +119,28 @@ if str2double(data_struct.cleaning_artifacts) == 1
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
 
+            % load figure with bigger size. Then do three subplots each
+            % with 1/3 of the trials.
             h = figure('units','normalized','position',[.1 .1 .8 .8]);
-            subplot(1,3,1); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),1:trial_cut/3),'color',[0,0,0]);
+            subplot(1,3,1); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),1:floor(trial_cut/3)),'color',[0,0,0]);
             grid
-            title(['trials ' int2str(1) ' to ' int2str(trial_cut/3)]);
+            title(['trials ' int2str(1) ' to ' int2str(floor(trial_cut/3))]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) -multPl n(trial_cut/3)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) -multPl n(floor(trial_cut/3))+multPl]);
             xlabel('Time (ms)')
             
-            subplot(1,3,2); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),trial_cut/3+1:(trial_cut/3)*2),'color',[0,0,0]);
+            subplot(1,3,2); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),floor(trial_cut/3)+1:(floor(trial_cut/3))*2),'color',[0,0,0]);
             grid
-            title(['trials ' int2str(trial_cut/3+1) ' to ' int2str((trial_cut/3)*2)]);
+            title(['trials ' int2str(floor(trial_cut/3)+1) ' to ' int2str((floor(trial_cut/3))*2)]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n(trial_cut/3) n((trial_cut/3)*2)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n(floor(trial_cut/3)) n((floor(trial_cut/3))*2)+multPl]);
             xlabel('Time (ms)')
             
-            subplot(1,3,3); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),(trial_cut/3)*2+1:end),'color',[0,0,0]);
+            subplot(1,3,3); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),(floor(trial_cut/3))*2+1:end),'color',[0,0,0]);
             grid
-            title(['trials ' int2str((trial_cut/3)*2+1) ' to ' int2str(trial_cut)]);
+            title(['trials ' int2str((floor(trial_cut/3))*2+1) ' to ' int2str(trial_cut)]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((trial_cut/3)*2) n(end)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
             suptitle({['channel ' int2str(Ei)] ; ...
                 ['if you want to change reject: press space; if you want to keep: mouse click']})
@@ -152,8 +154,9 @@ if str2double(data_struct.cleaning_artifacts) == 1
             close(h)
         end
         
-        % plot the average for each channel again and show the actual
+        % plot trials for each channel again and show the actual
         % marking of the channel. Press space if you changed your mind
+        val = [];
         for Ei = 1:size(EEGN.data,1)
             if find(goodChan==Ei)
                 Stigma = 'good';
@@ -167,29 +170,38 @@ if str2double(data_struct.cleaning_artifacts) == 1
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
 
+            % load figure with bigger size. Then do three subplots each
+            % with 1/3 of the trials.
             h = figure('units','normalized','position',[.1 .1 .8 .8]);
-            subplot(1,3,1); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),1:trial_cut/3),'color',[0,0,0]);
+            subplot(1,3,1); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),1:floor(trial_cut/3)),'color',[0,0,0]);
             grid
-            title(['trials ' int2str(1) ' to ' int2str(trial_cut/3)]);
+            title(['trials ' int2str(1) ' to ' int2str(floor(trial_cut/3))]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) -multPl n(trial_cut/3)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) -multPl n(floor(trial_cut/3))+multPl]);
             xlabel('Time (ms)')
             
-            subplot(1,3,2); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),trial_cut/3+1:(trial_cut/3)*2),'color',[0,0,0]);
+            subplot(1,3,2); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),floor(trial_cut/3)+1:(floor(trial_cut/3))*2),'color',[0,0,0]);
             grid
-            title(['trials ' int2str(trial_cut/3+1) ' to ' int2str((trial_cut/3)*2)]);
+            title(['trials ' int2str(floor(trial_cut/3)+1) ' to ' int2str((floor(trial_cut/3))*2)]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n(trial_cut/3) n((trial_cut/3)*2)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n(floor(trial_cut/3)) n((floor(trial_cut/3))*2)+multPl]);
             xlabel('Time (ms)')
             
-            subplot(1,3,3); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),(trial_cut/3)*2+1:end),'color',[0,0,0]);
+            subplot(1,3,3); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),(floor(trial_cut/3))*2+1:end),'color',[0,0,0]);
             grid
-            title(['trials ' int2str((trial_cut/3)*2+1) ' to ' int2str(trial_cut)]);
+            title(['trials ' int2str(floor((trial_cut/3))*2+1) ' to ' int2str(trial_cut)]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((trial_cut/3)*2) n(end)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
             suptitle({['channel ' int2str(Ei) ' is marked as ' Stigma] ; ...
-                ['if you want to change the mark (regardless of direction g-->b; b-->g) press space']})
+                ['if you want to change the mark (regardless of direction g-->b; b-->g) press space'] ; ...
+                ['if you want to skip this additional loop press: e']})
+            
+            % breaks loop if "e" is pressed
+            val=double(get(h,'CurrentCharacter'));
+            if val == 101
+                break
+            end
             
             button = waitforbuttonpress;
             if button ~= 0
@@ -214,6 +226,8 @@ if str2double(data_struct.cleaning_artifacts) == 1
     else
         warning('no correct channel rejection type provided. default cleaning with channel rejection on')
     end
+    
+% if no cleaning should be done but channel rejection manually:
 elseif str2double(data_struct.cleaning_artifacts) == 0
     if str2double(data_struct.channel_rejection) == 1
         % clean channel manually by visual inspection and do not clean data
@@ -224,7 +238,7 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
         goodChan = [];
         badChan = [];
         
-        % plot the average for each channel and distinguish between good
+        % plot for each channel plot all trials and distinguish between good
         % and bad channels according to the mouse / space click
         for Ei = 1:size(EEGN.data,1)
             CutTrial = squeeze(EEGN.data(Ei,:,:));
@@ -234,26 +248,28 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
 
+            % load figure with bigger size. Then do three subplots each
+            % with 1/3 of the trials.
             h = figure('units','normalized','position',[.1 .1 .8 .8]);
-            subplot(1,3,1); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),1:trial_cut/3),'color',[0,0,0]);
+            subplot(1,3,1); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),1:floor(trial_cut/3)),'color',[0,0,0]);
             grid
-            title(['trials ' int2str(1) ' to ' int2str(trial_cut/3)]);
+            title(['trials ' int2str(1) ' to ' int2str(floor(trial_cut/3))]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) -multPl n(trial_cut/3)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) -multPl n(floor(trial_cut/3))+multPl]);
             xlabel('Time (ms)')
             
-            subplot(1,3,2); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),trial_cut/3+1:(trial_cut/3)*2),'color',[0,0,0]);
+            subplot(1,3,2); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),floor(trial_cut/3)+1:(floor(trial_cut/3))*2),'color',[0,0,0]);
             grid
-            title(['trials ' int2str(trial_cut/3+1) ' to ' int2str((trial_cut/3)*2)]);
+            title(['trials ' int2str(floor(trial_cut/3)+1) ' to ' int2str((floor(trial_cut/3))*2)]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n(trial_cut/3) n((trial_cut/3)*2)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n(floor(trial_cut/3)) n((floor(trial_cut/3))*2)+multPl]);
             xlabel('Time (ms)')
             
-            subplot(1,3,3); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),(trial_cut/3)*2+1:end),'color',[0,0,0]);
+            subplot(1,3,3); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),(floor(trial_cut/3))*2+1:end),'color',[0,0,0]);
             grid
-            title(['trials ' int2str((trial_cut/3)*2+1) ' to ' int2str(trial_cut)]);
+            title(['trials ' int2str((floor(trial_cut/3))*2+1) ' to ' int2str(trial_cut)]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((trial_cut/3)*2) n(end)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
             suptitle({['channel ' int2str(Ei)] ; ...
                 ['if you want to change reject: press space; if you want to keep: mouse click']})
@@ -267,8 +283,9 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             close(h)
         end
         
-        % plot the average for each channel again and show the actual
+        % plot trials for each channel again and show the actual
         % marking of the channel. Press space if you changed your mind
+        val = [];
         for Ei = 1:size(EEGN.data,1)
             if find(goodChan==Ei)
                 Stigma = 'good';
@@ -282,29 +299,38 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
 
+            % load figure with bigger size. Then do three subplots each
+            % with 1/3 of the trials.
             h = figure('units','normalized','position',[.1 .1 .8 .8]);
-            subplot(1,3,1); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),1:trial_cut/3),'color',[0,0,0]);
+            subplot(1,3,1); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),1:floor(trial_cut/3)),'color',[0,0,0]);
             grid
-            title(['trials ' int2str(1) ' to ' int2str(trial_cut/3)]);
+            title(['trials ' int2str(1) ' to ' int2str(floor(trial_cut/3))]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) -multPl n(trial_cut/3)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) -multPl n(floor(trial_cut/3))+multPl]);
             xlabel('Time (ms)')
             
-            subplot(1,3,2); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),trial_cut/3+1:(trial_cut/3)*2),'color',[0,0,0]);
+            subplot(1,3,2); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),floor(trial_cut/3)+1:(floor(trial_cut/3))*2),'color',[0,0,0]);
             grid
-            title(['trials ' int2str(trial_cut/3+1) ' to ' int2str((trial_cut/3)*2)]);
+            title(['trials ' int2str(floor(trial_cut/3)+1) ' to ' int2str((floor(trial_cut/3))*2)]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n(trial_cut/3) n((trial_cut/3)*2)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n(floor(trial_cut/3)) n((floor(trial_cut/3))*2)+multPl]);
             xlabel('Time (ms)')
             
-            subplot(1,3,3); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),(trial_cut/3)*2+1:end),'color',[0,0,0]);
+            subplot(1,3,3); plot(EEGN.times(idx(1):idx(2)),CutTrial(idx(1):idx(2),(floor(trial_cut/3))*2+1:end),'color',[0,0,0]);
             grid
-            title(['trials ' int2str((trial_cut/3)*2+1) ' to ' int2str(trial_cut)]);
+            title(['trials ' int2str((floor(trial_cut/3))*2+1) ' to ' int2str(trial_cut)]);
             set(gca,'YTick',[]);
-            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((trial_cut/3)*2) n(end)+multPl]);
+            axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
             suptitle({['channel ' int2str(Ei) ' is marked as ' Stigma] ; ...
-                ['if you want to change the mark (regardless of direction g-->b; b-->g) press space']})
+                ['if you want to change the mark (regardless of direction g-->b; b-->g) press space'] ; ...
+                ['if you want to skip this additional loop press: e']})
+            
+            % breaks loop if "e" is pressed
+            val=double(get(h,'CurrentCharacter'));
+            if val == 101
+                break
+            end
             
             button = waitforbuttonpress;
             if button ~= 0
