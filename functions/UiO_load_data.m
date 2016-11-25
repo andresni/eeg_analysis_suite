@@ -39,23 +39,17 @@ if str2double(data_struct.save_folder) == 0
         char_idx = strfind(data_struct.vhdrsource,'\');
     end
     data_path = data_struct.vhdrsource(1:char_idx(end));
-    load_file = [data_path  load_name];
-    load_loc = [data_path loc_name];
 else
-    % if save_folder path provided, check if / or \ is used
-    subfolder1 = subj_name{1};
-    subfolder2 = data_struct.session;
-    
     if isempty(strfind(data_struct.save_folder,'\'))
-        load_folder2 = [data_struct.save_folder '/' subfolder1 '/' subfolder2];
-        load_file = [load_folder2 '/' load_name];
-        load_loc = [load_folder2 '/' loc_name]; 
+        char_idx = strfind(data_struct.save_folder,'/'); 
     else
-        load_folder2 = [data_struct.save_folder '\' subfolder1 '\' subfolder2];
-        load_file = [load_folder2 '\' load_name];
-        load_loc = [load_folder2 '\' loc_name];
-    end    
+        char_idx = strfind(data_struct.save_folder,'\');
+    end
+    data_path = data_struct.save_folder(1:char_idx(end));
 end
+
+load_file = [data_path  load_name];
+load_loc = [data_path loc_name];
 
 disp(['load data: ' load_name]);
 load([load_file '.mat']);

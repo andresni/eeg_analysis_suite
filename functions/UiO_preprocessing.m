@@ -392,6 +392,40 @@ end
 
 end
 
+%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
+% This function will crop the data according to the first and last trial or
+% to the provided time in the csvfile. The idea is that at some recordings
+% at the beginning and end some things are recorded (talking) which should
+% not be considered for preprocessing.
+% 
+% 
+function EEG = UiO_crop_data(data_struct,EEG)
+
+if isempty(strfind(data_struct.crop_data,','))
+    % find first and last stimuli and define crop borders as stimuli 1 -
+    % 10seconds and stimuli end + 10 seconds
+    getStimuli = strcmp({EEG.event.type},'boundary');
+    getLatency = {EEG.event.latency};
+    getLatency(getStimuli) = [];
+    x = getLatency{1}-10*EEG.srate;
+    y = getLatency{end}+10*EEG.srate;
+elseif str2souble(data_struct.crop_data) == 0
+    x = 1;
+    y = size(EEG.data,2);
+else
+    %define stimuli 1 and stimuli end according to csvfile
+    n_comma = strfind(data_struct.crop_data,',');
+    x_str = data_struct.crop_data(1:n_comma-1);
+    y_str = data_struct.crop_data(n_comma+1:end);
+    [~,x] = min(abs(EEG.times-str2double(data_struct.crop_data(1)))); 
+    [~,y] = min(abs(EEG.times-str2double(data_struct.crop_data(2)))); 
+end
+
+EEG.data = EEG.data(:,x:y);
+EEG.times = EEG.times(x:y);
+
+end
+
 %%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%%
 % This function takes the provided parameters (of the csv file) out of the
 % struct (data_struct) and makes them availeble for the preprocessing
