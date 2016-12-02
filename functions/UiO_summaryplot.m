@@ -1,4 +1,9 @@
 % summary Plot function
+% 
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 
 function [EEG,locFile] = UiO_summaryplot(data_struct,subj_name,EEG,locFile)
 % 

@@ -14,7 +14,10 @@
 % This function will compress the data to 99% of explained variance. This
 % step is important for later ICA-analysis
 % 
-% by questions: benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 % 
 function [EEG,locFile] = UiO_pca(data_struct,subj_name,EEG,locFile)
 

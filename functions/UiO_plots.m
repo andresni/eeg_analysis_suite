@@ -14,7 +14,10 @@
 % This function will plot the EEG at the step provided in the csvfile or at
 % the step which is processed before this plot function
 % 
-% by questions: benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 % 
 function [EEG,locFile] = UiO_plots(data_struct,subj_name,EEG,locFile)
 

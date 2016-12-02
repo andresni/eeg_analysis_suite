@@ -15,7 +15,10 @@
 % channels
 % 3: manually by the values provided in the csv-file
 %
-% by questions: benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 % 
 function [EEG,locFile] = UiO_TMS_correction(data_struct,subj_name,EEG,locFile)
 

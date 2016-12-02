@@ -14,7 +14,10 @@
 % (save_folder)
 % 
 %
-% by questions: benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 % 
 function [EEG,locFile] = UiO_save(data_struct,subj_name,EEG,locFile)
 

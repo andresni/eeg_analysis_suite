@@ -23,7 +23,10 @@
 % 8: rereference to the average
 % 9: remove line noise (cleanline)
 % 
-% by questions: benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 % 
 function [EEG,locFile] = UiO_preprocessing(data_struct,subj_name,EEG,locFile)
 

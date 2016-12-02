@@ -1,7 +1,9 @@
 function [] = eeganalysis( csvname )
 %EEGANALYSIS Main analysis script. Calls stuff
 %and reads stuff.
-%By André Sevenius Nilsen & Benjamin Thürer
+% 
+% by questions:
+% b.e.juel@medisin.uio.no
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 

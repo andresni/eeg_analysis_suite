@@ -16,7 +16,10 @@
 % for ICs as the automized method works not very good.
 % ICA cleaning works on both, continous and epoched data.
 % 
-% by questions: benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 %
 function [EEG,locFile] = UiO_ica_cleaning(data_struct,subj_name,EEG,locFile)
 

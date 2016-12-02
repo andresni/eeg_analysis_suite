@@ -16,7 +16,10 @@
 % integer value for the downsampling (1: no downsampling, 2: every other
 % point, 3: every third etc)
 %
-% by questions: b.e.juel@medisin.uio.no or benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 %
 function [EEG,locFile] = UiO_pci(data_struct,subj_name,EEG,locFile)
 

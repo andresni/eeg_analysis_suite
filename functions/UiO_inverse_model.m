@@ -15,7 +15,10 @@
 % you provide the lead field matrix (lft), surface (srf) and location (loc)
 % files of the subject (see csvfile).
 % 
-% by questions: b.e.juel@medisin.uio.no or benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 %
 function [EEG,locFile] = UiO_inverse_model(data_struct,subj_name,EEG,locFile)
 

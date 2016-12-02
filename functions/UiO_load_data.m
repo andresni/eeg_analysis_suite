@@ -11,7 +11,10 @@
 % This function will load the eeg file and locFile of the last processing
 % step in the EEG-analysis.
 % 
-% by questions: benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 %
 function [EEGF,LOCF] = UiO_load_data(data_struct,subj_name,file_step,specific_name)
 

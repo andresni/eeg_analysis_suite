@@ -16,7 +16,10 @@
 % double-data. Please make sure that eeglab is running in double-precision
 % mode: eeglab-->memory options
 % 
-% by questions: benjamin.thuerer@kit.edu
+% by questions:
+% b.e.juel@medisin.uio.no
+% sevenius.nilsen@gmail.com
+% benjamin.thuerer@kit.edu
 %
 function [EEG,locFile] = UiO_ica(data_struct,subj_name,EEG,locFile)
 
