@@ -45,10 +45,10 @@ else
     else
         char_idx = strfind(data_struct.save_folder,'\');
     end
-    data_path = data_struct.save_folder(1:char_idx(end));
+    data_path = [data_struct.save_folder(1:char_idx(end))];
 end
 
-load_file = [data_path  load_name];
+load_file = [data_path subj_name{1} '\' data_struct.session '\'  load_name];
 load_loc = [data_path loc_name];
 
 disp(['load data: ' load_name]);
