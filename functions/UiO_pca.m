@@ -42,26 +42,23 @@ if ndims(EEG.data) == 3
     ObsData = reshape(ObsData,size(ObsData,1),size(ObsData,2)*size(ObsData,3));
 end
 
-% remove the mean (zero mean), compute the eigenvectors of the covariance
-% matrix and sort eigenvectors and values in descending order
+% remove the mean (zero mean), compute single value decomposition
+% with the single values
 ZeroData = bsxfun(@minus,ObsData,mean(ObsData,2));
-CovData = cov(ZeroData');
-[VecData,ValData] = eig(CovData);
-VecData = VecData(:,end:-1:1); %eigenvectors
-ValData = diag(ValData);
-ValData = ValData(end:-1:1); %eigenvalues
+[VecData,ValData] = svd(ZeroData); %single vectors and single values
+ValData = diag(ValData*ValData'); %reak single values
 
 % decompress to 99.9% of the variance
 perVar = ones(1,size(ValData,1));
 for k = 1:size(ValData,1)
     perVar(k) = (sum(ValData(1:k))/sum(ValData(:)))*100;
 end
-lastPC = find(diff(perVar > 99.9))+1;
+lastPC = find(diff(perVar > 80))+1;
 EEG.lastPC = lastPC;
 
 % keep the 99.9% components and multiply them with the original data
 % then decompress the data
-PostPCAData = VecData(:,1:lastPC)' * ObsData;
+PostPCAData = VecData(:,1:lastPC)' * ZeroData;
 DecompData = (PostPCAData' * VecData(:,1:lastPC)')';
 
 if ndims(EEG.data) == 3
