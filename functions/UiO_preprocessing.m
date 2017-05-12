@@ -413,7 +413,7 @@ if str2double(data_struct.notch_filter) == 0
     ,0,'scanforlines',1,'tau',100,'verb',1,'winsize',4,'winstep',4);
 elseif str2double(data_struct.notch_filter) == 1
     filter_deg = 3;
-    LNFnotch = [(LNF-5)*2/EEG.srate, (LNF+5)*2/EEG.srate];
+    LNFnotch = [(LNFreq-5)*2/EEG.srate, (LNFreq+5)*2/EEG.srate];
     [b,a] = butter(filter_deg,LNFnotch,'stop');
     EEG.data = filter(b,a,EEG.data);
     disp(['line noise reduced by notch filter']);
