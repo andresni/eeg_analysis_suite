@@ -50,31 +50,38 @@ ValData = diag(ValData*ValData'); %reak single values
 
 % decompress to 99.9% of the variance
 perVar = ones(1,size(ValData,1));
-for k = 1:size(ValData,1)
-    perVar(k) = (sum(ValData(1:k))/sum(ValData(:)))*100;
+k = 0;
+i = 1;
+while k < 99
+    k = (sum(ValData(1:i))/sum(ValData(:)))*100;
+    i = i+1;
 end
-lastPC = find(diff(perVar > 80))+1;
-EEG.lastPC = lastPC;
+
+EEG.lastPC = i;
 
 % keep the 99.9% components and multiply them with the original data
 % then decompress the data
-PostPCAData = VecData(:,1:lastPC)' * ZeroData;
-DecompData = (PostPCAData' * VecData(:,1:lastPC)')';
+PostPCAData = VecData(:,1:EEG.lastPC)' * ZeroData;
+DecompData = (PostPCAData' * VecData(:,1:EEG.lastPC)')';
 
 if ndims(EEG.data) == 3
     postCompData = reshape(DecompData,size(EEG.data,1),size(EEG.data,2),size(EEG.data,3));
+else
+    postCompData = DecompData;
 end
 
 EEG.data = postCompData;
 
-disp(['Data compressed to ' num2str(lastPC) ' principal components']);
+disp(['Data compressed to ' num2str(EEG.lastPC) ' principal components']);
 
 % loc file entry
-locFile{end+1} = {'after_pca',['data is compressed to ' num2str(lastPC) ' principal components which explain ' ...
+locFile{end+1} = {'after_pca',['data is compressed to ' num2str(EEG.lastPC) ' principal components which explain ' ...
     '99.9% of the variance']};
 
 if str2double(data_struct.plot_always)==1
     UiO_plots(data_struct,subj_name,EEG,locFile);
 end
+
+disp('data PCA is done')
 
 end

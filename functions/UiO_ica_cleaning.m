@@ -97,7 +97,7 @@ elseif str2double(data_struct.ica_rejection) == 2
         % accordingly
         if ndims(EEG.icaact) == 3
             % open figure with 4 subplots (1 to 4)
-            h = figure;
+            h = figure('units','normalized','position',[.1 .1 .8 .8]);
 
             % 1: mean time (ERP) plot from -500 to 500 ms
             subplot(2,2,1), plot(EEG.times(idx_t(1):idx_t(2)),mean(EEG.icaact(Ci,idx_t(1):idx_t(2),:),3));
@@ -110,8 +110,8 @@ elseif str2double(data_struct.ica_rejection) == 2
             [spectra,freq] = spectopo( icasmthg, EEG.pnts, EEG.srate, 'mapnorm', EEG.icawinv(:,Ci), 'plot','off');
             freq = freq';
             [~,idx_f] = min(abs(freq-60));
-            spectra = 10*log10(spectra./freq);
-            subplot(2,2,2),plot(freq(1:idx_f)',spectra(1:idx_f),'LineWidth',2),axis([0 60 min(real(spectra(1:idx_f))) max(real(spectra(1:idx_f)))]);
+%             spectra = 10*log10(spectra./freq);
+            subplot(2,2,2),plot(freq(1:idx_f)',spectra(1:idx_f),'LineWidth',2) %,axis([0 60 min(abs(real(spectra(1:idx_f)))) max(abs(real(spectra(1:idx_f))))]);
             ylabel('dezibel'); xlabel('frequency');
             title('power spectra');
 
@@ -142,13 +142,13 @@ elseif str2double(data_struct.ica_rejection) == 2
             close(h)
         else
             % open figure with 3 subplots (1 to 3)
-            h = figure;
+            h = figure('units','normalized','position',[.1 .1 .8 .8]);
 
             % 1: power spectra from 0 to 100 hz
             icasmthg = (EEG.icaweights(Ci,:)*EEG.icasphere)*EEG.data(EEG.icachansind,:);
             [spectra,freq] = spectopo( icasmthg, EEG.pnts, EEG.srate, 'mapnorm', EEG.icawinv(:,Ci), 'plot','off');
             [~,idx_f] = min(abs(freq-60));
-            subplot(2,2,2),plot(freq(1:idx_f),spectra(1:idx_f),'LineWidth',2),axis([0 60 min(spectra(1:idx_f))-1 max(spectra(1:idx_f))+1]);
+            subplot(2,2,2),plot(freq(1:idx_f),spectra(1:idx_f),'LineWidth',2) %,axis([0 60 min(spectra(1:idx_f))-1 max(spectra(1:idx_f))+1]);
             title('power spectra');
             
             % 4: Topographie plot 2d
@@ -225,5 +225,7 @@ locFile{end+1} = {'ica_cleaned',['data is cleaned by ICA. In total ' num2str(len
 if str2double(data_struct.plot_always)==1
     UiO_plots(data_struct,subj_name,EEG,locFile);
 end
+
+disp('data ICA cleaning is done')
 
 end

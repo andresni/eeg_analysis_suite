@@ -33,9 +33,9 @@ if isempty(EEG)
         [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
-  
+
 % epoch data to trials (EEG*times*trials)
-EEG = pop_epoch( EEG, {  'R128'  }, [str2double(data_struct.trial_start)/EEG.srate str2double(data_struct.trial_end)/EEG.srate] ...
+EEG = pop_epoch( EEG, {  EEG.mainEventTrigger  }, [str2double(data_struct.trial_start)/EEG.srate str2double(data_struct.trial_end)/EEG.srate] ...
     , 'newname', ' resampled epochs', 'epochinfo', 'yes');
 
 % remove mean over channel
@@ -71,7 +71,7 @@ elseif str2double(data_struct.trial_rejection) == 2
         axis([min(EEG.times(idx(1):idx(2))) max(EEG.times(idx(1):idx(2))) -multPl n(end)+multPl]);
         xlabel('Time (ms)')
         
-        [~,~,but_exit] = ginput(1);
+%         [~,~,but_exit] = ginput(1);
         button = waitforbuttonpress;
         if button == 0
             goodTrial(end+1) = Ei;
@@ -107,14 +107,16 @@ elseif str2double(data_struct.trial_rejection) == 2
         set(gca,'YTick',[]);
         axis([min(EEG.times(idx(1):idx(2))) max(EEG.times(idx(1):idx(2))) -multPl n(end)+multPl]);
         xlabel('Time (ms)');
+
+        button = waitforbuttonpress;
         
         % breaks loop if "e" is pressed
         val=double(get(h,'CurrentCharacter'));
         if val == 101
+            close(h)
             break
         end
         
-        button = waitforbuttonpress;
         if button ~= 0
             if find(badTrial==Ei)
                 idx_Ei = badTrial == Ei;
@@ -141,6 +143,8 @@ disp([ num2str(length(EEG.accBadEpochs)) ' Trials rejected.']);
 locFile{end+1} = {'epoched',['epoched data from ' data_struct.trial_start 'to ' data_struct.trial_end 'ms. ' ...
     num2str(EEG.accBadEpochs) ' trials are rejected by ' data_struct.trial_rejection ' ' ...
     '(0 = visual inspection; 1 = automatically)']};
+
+disp('data trial rejection is done')
 
 end
 

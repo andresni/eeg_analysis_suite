@@ -1,4 +1,4 @@
-function [] = eeganalysis( csvname )
+function [] = eeganalysis
 %EEGANALYSIS Main analysis script. Calls stuff
 %and reads stuff.
 % 
@@ -6,8 +6,13 @@ function [] = eeganalysis( csvname )
 % b.e.juel@medisin.uio.no
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
+clear
+
+csvname = uigetfile('','choose the csv data in private folder (change file format to "All Files")');
+csvname(end-3:end) = [];
 
 %%Calling the read csv file function
+
 param=readcsv(csvname);
 
 % subject names

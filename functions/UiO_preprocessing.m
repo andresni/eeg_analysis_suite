@@ -97,6 +97,10 @@ chLocs = EEG.chanlocs;
 % remove mean over channel
 EEG.data = bsxfun(@minus,EEG.data,mean(EEG.data,2));
 
+EEG.mainEventTrigger = 'R128';
+multPl = 50; % y-axis distance for plot
+CHlabels = {EEG.chanlocs.labels};
+
 % check if cleaning and channel rejection should be done automatically
 % if yes, clean data using automatic subspace reconstruction (ASR)
 if str2double(data_struct.cleaning_artifacts) == 1
@@ -104,9 +108,14 @@ if str2double(data_struct.cleaning_artifacts) == 1
         % clean data without removing any channel or time-bins
         EEG = clean_rawdata(EEG, 'off', [0.25 0.75], 'off', 'off', BurstC, 'off');
         
+        % run clean_rawdata only to find bad channels
+        EEGT = EEG;
+        EEGT = clean_rawdata(EEGT, [], [0.25 0.75], 0.88, [], BurstC, 'off');
+        bad_chans_clean = setdiff({chLocs.labels},{EEGT.chanlocs.labels});
+
         % clean channels manually by visual inspection
         % epoch the data and compute the average over trials
-        EEGN = pop_epoch( EEG, {  'R128'  }, [-1 1], 'newname', ' resampled epochs', 'epochinfo', 'yes');
+        EEGN = pop_epoch( EEG, {  EEG.mainEventTrigger  }, [-1 1], 'newname', ' resampled epochs', 'epochinfo', 'yes');
         [~,idx(1)] = min(abs(EEGN.times-(-500)));
         [~,idx(2)] = min(abs(EEGN.times-(500)));
         goodChan = [];
@@ -115,9 +124,15 @@ if str2double(data_struct.cleaning_artifacts) == 1
         % plot for each channel all trials and distinguish between good
         % and bad channels according to the mouse / space click
         for Ei = 1:size(EEGN.data,1)
+            % check if bad channel in clean_rawdata
+            if find(strcmp(bad_chans_clean,CHlabels{Ei}))
+                bad_chan_mark = 'bad channel';
+            else
+                bad_chan_mark = ' ';
+            end
+            
             CutTrial = squeeze(EEGN.data(Ei,:,:));
         
-            multPl = 20;
             n = 1:multPl:size(CutTrial,2)*multPl;
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
@@ -145,7 +160,7 @@ if str2double(data_struct.cleaning_artifacts) == 1
             set(gca,'YTick',[]);
             axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
-            suptitle({['channel ' int2str(Ei)] ; ...
+            suptitle({['channel ' CHlabels{Ei}] ; ...
                 ['if you want to change reject: press space; if you want to keep: mouse click']})
             
             button = waitforbuttonpress;
@@ -168,7 +183,6 @@ if str2double(data_struct.cleaning_artifacts) == 1
             end
             CutTrial = squeeze(EEGN.data(Ei,:,:));
         
-            multPl = 20;
             n = 1:multPl:size(CutTrial,2)*multPl;
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
@@ -196,7 +210,8 @@ if str2double(data_struct.cleaning_artifacts) == 1
             set(gca,'YTick',[]);
             axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
-            suptitle({['channel ' int2str(Ei) ' is marked as ' Stigma] ; ...
+
+            suptitle({['channel ' CHlabels{Ei} ' is marked as ' Stigma] ; ...
                 ['if you want to change the mark (regardless of direction g-->b; b-->g) press space'] ; ...
                 ['if you want to skip this additional loop press: e']})
             
@@ -235,18 +250,29 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
     if str2double(data_struct.channel_rejection) == 1
         % clean channel manually by visual inspection and do not clean data
         % epoch the data and compute the average over trials
-        EEGN = pop_epoch( EEG, {  'R128'  }, [-1 1], 'newname', ' resampled epochs', 'epochinfo', 'yes');
+        EEGN = pop_epoch( EEG, {  EEG.mainEventTrigger  }, [-1 1], 'newname', ' resampled epochs', 'epochinfo', 'yes');
         [~,idx(1)] = min(abs(EEGN.times-(-500)));
         [~,idx(2)] = min(abs(EEGN.times-(500)));
         goodChan = [];
         badChan = [];
         
+        % run clean_rawdata only to find bad channels
+        EEGT = EEG;
+        EEGT = clean_rawdata(EEGT, [], [0.25 0.75], 0.88, [], BurstC, 'off');
+        bad_chans_clean = setdiff({chLocs.labels},{EEGT.chanlocs.labels});
+
         % plot for each channel plot all trials and distinguish between good
         % and bad channels according to the mouse / space click
         for Ei = 1:size(EEGN.data,1)
+            % check if bad channel in clean_rawdata
+            if find(strcmp(bad_chans_clean,CHlabels{Ei}))
+                bad_chan_mark = 'bad channel';
+            else
+                bad_chan_mark = ' ';
+            end
+            
             CutTrial = squeeze(EEGN.data(Ei,:,:));
         
-            multPl = 20;
             n = 1:multPl:size(CutTrial,2)*multPl;
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
@@ -274,7 +300,8 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             set(gca,'YTick',[]);
             axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
-            suptitle({['channel ' int2str(Ei)] ; ...
+
+            suptitle({['channel ' CHlabels{Ei}] ; ...
                 ['if you want to change reject: press space; if you want to keep: mouse click']})
             
             button = waitforbuttonpress;
@@ -297,7 +324,6 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             end
             CutTrial = squeeze(EEGN.data(Ei,:,:));
         
-            multPl = 20;
             n = 1:multPl:size(CutTrial,2)*multPl;
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
@@ -325,9 +351,12 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             set(gca,'YTick',[]);
             axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
-            suptitle({['channel ' int2str(Ei) ' is marked as ' Stigma] ; ...
+
+            suptitle({['channel ' CHlabels{Ei} ' is marked as ' Stigma] ; ...
                 ['if you want to change the mark (regardless of direction g-->b; b-->g) press space'] ; ...
                 ['if you want to skip this additional loop press: e']})
+            
+            button = waitforbuttonpress;
             
             % breaks loop if "e" is pressed
             val=double(get(h,'CurrentCharacter'));
@@ -335,7 +364,6 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
                 break
             end
             
-            button = waitforbuttonpress;
             if button ~= 0
                 if find(badChan==Ei)
                     idx_Ei = badChan == Ei;
@@ -379,9 +407,19 @@ end
 % remove mean over channel
 EEG.data = bsxfun(@minus,EEG.data,mean(EEG.data,2));
 
-% correct data for line noise without notch-filter
-EEG = pop_cleanline(EEG,'ChanCompIndices',[1:EEG.nbchan],'SignalType','Channels','computepower',0,'LineFrequencies',[LNFreq LNFreq*2],'normSpectrum',0,'p',0.01,'pad',2,'plotfigures' ...
+% reduce line noise either by notch-filter or cleanline
+if str2double(data_struct.notch_filter) == 0
+    EEG = pop_cleanline(EEG,'ChanCompIndices',[1:EEG.nbchan],'SignalType','Channels','computepower',0,'LineFrequencies',[LNFreq LNFreq*2],'normSpectrum',0,'p',0.01,'pad',2,'plotfigures' ...
     ,0,'scanforlines',1,'tau',100,'verb',1,'winsize',4,'winstep',4);
+elseif str2double(data_struct.notch_filter) == 1
+    filter_deg = 3;
+    LNFnotch = [(LNF-5)*2/EEG.srate, (LNF+5)*2/EEG.srate];
+    [b,a] = butter(filter_deg,LNFnotch,'stop');
+    EEG.data = filter(b,a,EEG.data);
+    disp(['line noise reduced by notch filter']);
+else
+    error('no notch_filter stated in the csv file')
+end
  
 % loc file entry
 locFile{end+1} = {'preprocessed',['preprocessed with (sampling rate; ' ...
@@ -392,6 +430,8 @@ locFile{end+1} = {'preprocessed',['preprocessed with (sampling rate; ' ...
 if str2double(data_struct.plot_always)==1
     UiO_plots(data_struct,subj_name,EEG,locFile);
 end
+
+disp('data preprocessing is done')
 
 end
 

@@ -40,12 +40,24 @@ end
 % change to double precision
 EEG.data = double(EEG.data);
 
+dataRank = double(reshape(EEG.data,size(EEG.data,1),size(EEG.data,2)*size(EEG.data,3)));
+rankIDX = rank(dataRank);
+
 % perform ICA on reduced rank after pca
 if isfield(EEG,'lastPC')
     lastPC = EEG.lastPC;
+    if lastPC > rankIDX
+        lastPC = rankIDX;
+        dsip(['Rank violation: reducing ICA to ' num2str(rank) ' components']);
+    end
     EEG = pop_runica(EEG,'pca',lastPC,'extended',1,'interupt','on');
 else
-    EEG = pop_runica(EEG,'extended',1,'interupt','on');
+    if rankIDX < size(EEG.data,1)
+        dsip(['Rank violation: reducing ICA to ' num2str(rank) ' components']);
+        EEG = pop_runica(EEG,'pca',rankIDX,'extended',1,'interupt','on');
+    else
+        EEG = pop_runica(EEG,'extended',1,'interupt','on');
+    end
 end
 
 
@@ -55,5 +67,7 @@ locFile{end+1} = {'after_ica',['Independent components are computed and stored i
 if str2double(data_struct.plot_always)==1
     UiO_plots(data_struct,subj_name,EEG,locFile);
 end
+
+disp('data ICA computing is done')
 
 end

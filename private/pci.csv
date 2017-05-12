@@ -39,9 +39,10 @@ downsample_rate;1000;1000;;;;;;;;;;;;;;;;%what do you want to downsample to, in 
 interpolate_lower_tms;-1;-1;;;;;;;;;;;;;;;;%interpolation lower end
 interpolate_higher_tms;10;10;;;;;;;;;;;;;;;;%interpolation higher end
 crop_data;60,20;;;;;;;;;;;;;;;;;"%crops the continuous data before preprocessing. Trials= from first to last trial; x,y= x seconds from beginning to y seconds to the end (e.g. 180,20)"
-highpassfilter;1;1;;;;;;;;;;;;;;;;%higphass filter in hz (bandpass edge. cut-off frequency is value - 0.5)
-lowpassfilter;80;80;;;;;;;;;;;;;;;;%lowpassfilter in hz (bandpass edge. Cut-off frequency is value + 0.5)
+highpassfilter;1;1;;;;;;;;;;;;;;;;"%higphass filter in hz (bandpass edge; cut-off frequency is different (for 1 Hz it is 0.5 Hz))"
+lowpassfilter;80;80;;;;;;;;;;;;;;;;"%lowpassfilter in hz (bandpass edge; Cut-off frequency is different)"
 linenoise_frequency;50;50;;;;;;;;;;;;;;;;%linenoise removal around hz
+notch_filter;1;1;;;;;;;;;;;;;;;;"%0 = no notch filter; 1 = IIR notch filter (-5 < frequency > +5 Hz)"
 trial_start;-500;-500;;;;;;;;;;;;;;;;%start epoch in ms
 trial_end;500;500;;;;;;;;;;;;;;;;%end epoch in ms
 trial_threshold;100;100;;;;;;;;;;;;;;;;%%if trial rejection automatic: rejection threshold in µV
@@ -58,7 +59,7 @@ plot_always;0;0;;;;;;;;;;;;;;;;%%1=plots data after every processing step, 0 = n
 ;;;;;;;;;;;;;;;;;;
 %%Automatic_rejection_parameters%%;;;;;;;;;;;;;;;;;;
 tms_interpolation;2;2;;;;;;;;;;;;;;;;%%1=automatic,2=manual by inspection,3=manual by csv-input
-cleaning_artifacts;1;1;;;;;;;;;;;;;;;;%%1=automatic by using clean_rawdata, 0=no cleaning
+cleaning_artifacts;1;1;;;;;;;;;;;;;;;;%%1=there should be some sort of cleaning, 0=no cleaning
 channel_rejection;2;1;;;;;;;;;;;;;;;;%%1=automatic by using clean_rawdata, 2=manual by visual inspection, 0=no channel rejection
 trial_rejection;2;1;;;;;;;;;;;;;;;;%%1=automatic by threshold parameter (above), 2=manual by visual inspection
 ica_rejection;2;1;;;;;;;;;;;;;;;;%%1=automatic using ADJUST, 2=manually by inspection

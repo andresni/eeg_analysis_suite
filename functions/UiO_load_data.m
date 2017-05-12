@@ -42,6 +42,8 @@ if str2double(data_struct.save_folder) == 0
         char_idx = strfind(data_struct.vhdrsource,'\');
     end
     data_path = data_struct.vhdrsource(1:char_idx(end));
+    load_file = [data_path load_name];
+    load_loc = [data_path loc_name];
 else
     if isempty(strfind(data_struct.save_folder,'\'))
         char_idx = strfind(data_struct.save_folder,'/'); 
@@ -49,10 +51,11 @@ else
         char_idx = strfind(data_struct.save_folder,'\');
     end
     data_path = [data_struct.save_folder(1:char_idx(end))];
+    load_file = [data_path subj_name{1} '\' data_struct.session '\'  load_name];
+    load_loc = [data_path subj_name{1} '\' data_struct.session '\' loc_name];
 end
 
-load_file = [data_path subj_name{1} '\' data_struct.session '\'  load_name];
-load_loc = [data_path loc_name];
+
 
 disp(['load data: ' load_name]);
 load([load_file '.mat']);

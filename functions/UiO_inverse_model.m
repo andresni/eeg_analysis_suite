@@ -258,5 +258,7 @@ if str2double(data_struct.plot_always)==1
     UiO_plots(data_struct,subj_name,EEG,locFile);
 end
 
+disp('data inverse modelling is done')
+
 end
 
