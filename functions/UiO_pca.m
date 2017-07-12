@@ -52,7 +52,7 @@ ValData = diag(ValData*ValData'); %reak single values
 perVar = ones(1,size(ValData,1));
 k = 0;
 i = 1;
-while k < 99
+while k < 99.9
     k = (sum(ValData(1:i))/sum(ValData(:)))*100;
     i = i+1;
 end

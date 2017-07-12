@@ -24,7 +24,7 @@
 function [EEG,locFile] = UiO_ica_cleaning(data_struct,subj_name,EEG,locFile)
 
 if nargin < 2
-    error('provide at least data_struct and subject name. See help UiO_pca')
+    error('provide at least data_struct and subject name. See help UiO_ica_cleaning')
 end
 
 
@@ -129,8 +129,8 @@ elseif str2double(data_struct.ica_rejection) == 2
             % 4: Topographie plot 2d
             subplot(2,2,4),topoplot(EEG.icawinv(:,Ci),EEG.chanlocs,'electrodes','on'); colorbar
             title('2d headplot');
-            suptitle({['CI ' int2str(Ci) ' : ' artHE ' ' artVE ' ' artB ' ' artD] ; ...
-                ['press space to reject and left mouse click to keep the component']})
+            suptitle({['IC ' int2str(Ci) ' : \color{red}' artHE ' ' artVE ' ' artB ' ' artD] ; ...
+                ['\color{black} press space to reject and left mouse click to keep the component']})
 
             % seperate good and bad ic's by mouse click / space press
             button = waitforbuttonpress; 
@@ -195,26 +195,21 @@ EEG.specdata    = [];
 EEG.reject      = [];
 
 % remove EOG channels if exist
-if find(strcmp({EEG.chanlocs.labels},'HEOG'))
-    HEOG_idx = strcmp({EEG.chanlocs.labels},'HEOG');
-    EEG.chanlocs(HEOG_idx).labels = [];
-    if ndims(EEG.data)==3
-        EEG.data(HEOG_idx,:,:) = [];
-    elseif ndims(EEG.data)==2
-        EEG.data(HEOG_idx,:) = [];
-    else
-        error('not 2 and not 3 dimensions. What do you want?')
+
+if find(cell2mat(strfind({EEG.chanlocs.labels},'EOG')))
+    label_cell = strfind({EEG.chanlocs.labels},'EOG');
+    for i = 1:length(label_cell)
+        if ~isempty(label_cell{i} == 1)
+            label_idx(i) = 1;
+        end
     end
-end
-if find(strcmp({EEG.chanlocs.labels},'VEOG'))
-    VEOG_idx = strcmp({EEG.chanlocs.labels},'VEOG');
-    EEG.chanlocs(VEOG_idx).labels = [];
+    
     if ndims(EEG.data)==3
-        EEG.data(VEOG_idx,:,:) = [];
+        EEG.data(label_idx,:,:) = [];
     elseif ndims(EEG.data)==2
-        EEG.data(VEOG_idx,:) = [];
+        EEG.data(label_idx,:) = [];
     else
-        error('not 2 and not 3 dimensions. What do you want?')
+        error('not 2 and not 3 dimensions. What else could it be?')
     end
 end
 

@@ -109,8 +109,9 @@ if str2double(data_struct.cleaning_artifacts) == 1
         EEG = clean_rawdata(EEG, 'off', [0.25 0.75], 'off', 'off', BurstC, 'off');
         
         % run clean_rawdata only to find bad channels
+        disp('cleaning channels again to compare bad channels');
         EEGT = EEG;
-        EEGT = clean_rawdata(EEGT, [], [0.25 0.75], 0.88, [], BurstC, 'off');
+        EEGT = clean_rawdata(EEGT, [], [0.25 0.75], 0.88, [], 'off', 'off');
         bad_chans_clean = setdiff({chLocs.labels},{EEGT.chanlocs.labels});
 
         % clean channels manually by visual inspection
@@ -133,7 +134,9 @@ if str2double(data_struct.cleaning_artifacts) == 1
             
             CutTrial = squeeze(EEGN.data(Ei,:,:));
         
-            n = 1:multPl:size(CutTrial,2)*multPl;
+            max_value = 1.1*(mean(max(CutTrial)) + mean(abs(min(CutTrial))));
+            
+            n = 1:max_value:size(CutTrial,2)*max_value;
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
 
@@ -160,8 +163,8 @@ if str2double(data_struct.cleaning_artifacts) == 1
             set(gca,'YTick',[]);
             axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
-            suptitle({['channel ' CHlabels{Ei}] ; ...
-                ['if you want to change reject: press space; if you want to keep: mouse click']})
+            suptitle({['channel ' CHlabels{Ei} ', \color{red}' bad_chan_mark] ; ...
+                ['\color{black} if you want to change reject: press space; if you want to keep: mouse click']})
             
             button = waitforbuttonpress;
             if button == 0
@@ -183,7 +186,9 @@ if str2double(data_struct.cleaning_artifacts) == 1
             end
             CutTrial = squeeze(EEGN.data(Ei,:,:));
         
-            n = 1:multPl:size(CutTrial,2)*multPl;
+            max_value = 1.1*(mean(max(CutTrial)) + mean(abs(min(CutTrial))));
+            
+            n = 1:max_value:size(CutTrial,2)*max_value;
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
 
@@ -257,8 +262,9 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
         badChan = [];
         
         % run clean_rawdata only to find bad channels
+        disp('cleaning channels again to compare bad channels');
         EEGT = EEG;
-        EEGT = clean_rawdata(EEGT, [], [0.25 0.75], 0.88, [], BurstC, 'off');
+        EEGT = clean_rawdata(EEGT, [], [0.25 0.75], 0.88, [], 'off', 'off');
         bad_chans_clean = setdiff({chLocs.labels},{EEGT.chanlocs.labels});
 
         % plot for each channel plot all trials and distinguish between good
@@ -273,7 +279,9 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             
             CutTrial = squeeze(EEGN.data(Ei,:,:));
         
-            n = 1:multPl:size(CutTrial,2)*multPl;
+            max_value = 1.1*(mean(max(CutTrial)) + mean(abs(min(CutTrial))));
+            
+            n = 1:max_value:size(CutTrial,2)*max_value;
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
 
@@ -301,8 +309,8 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             axis([min(EEGN.times(idx(1):idx(2))) max(EEGN.times(idx(1):idx(2))) n((floor(trial_cut/3))*2) n(end)+multPl]);
             xlabel('Time (ms)')
 
-            suptitle({['channel ' CHlabels{Ei}] ; ...
-                ['if you want to change reject: press space; if you want to keep: mouse click']})
+            suptitle({['channel ' CHlabels{Ei} ', \color{red}' bad_chan_mark] ; ...
+                ['\color{black} if you want to change reject: press space; if you want to keep: mouse click']})
             
             button = waitforbuttonpress;
             if button == 0
@@ -324,7 +332,9 @@ elseif str2double(data_struct.cleaning_artifacts) == 0
             end
             CutTrial = squeeze(EEGN.data(Ei,:,:));
         
-            n = 1:multPl:size(CutTrial,2)*multPl;
+            max_value = 1.1*(mean(max(CutTrial)) + mean(abs(min(CutTrial))));
+            
+            n = 1:max_value:size(CutTrial,2)*max_value;
             CutTrial = bsxfun(@plus,CutTrial,n);
             trial_cut = size(CutTrial,2);
 
