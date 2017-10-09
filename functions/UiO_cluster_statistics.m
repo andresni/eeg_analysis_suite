@@ -35,9 +35,9 @@ dots_idx = sum(cell2mat(dots_idx) == 1);
 %% import group file
 % [groupFileName, groupFilePath] = uigetfile('','choose the file with the group table');
 if strcmp(sessions{2},'savings')
-    groupFileName = 'group_ID_cond-practice_savings.csv';
+    groupFileName = 'group_ID_sleep_savings.csv';
 else
-    groupFileName = 'group_ID_cond-practice_transfer.csv';
+    groupFileName = 'group_ID_sleep_transfer.csv';
 end
 groupFilePath = 'C:\Users\Promotion\03_Studie-III_DAVOS\data\';
 
@@ -65,7 +65,7 @@ for i = 1:length(group_ID)
     sbj_name = group_ID{i,1};
     gidx(i) = group_ID(find(strcmp({group_ID{:,1}},sbj_name)),2);
     disp(['Load dataset ' sbj_name ' for session ' sessions{1}]);
-    load_file = [folderpath '\' sbj_name '\' sessions{1} '\' sbj_name '_' sessions{1} '_after_wavelet.mat'];
+    load_file = [folderpath '\' sbj_name '\' sessions{1} '\' sbj_name '_' sessions{1} '_after_norm_power.mat'];
     load(load_file)
     [~,t_wndw(1)] = min(abs(EEG.times-time_window(1)));
     [~,t_wndw(2)] = min(abs(EEG.times-time_window(2)));
@@ -79,7 +79,7 @@ data_session_two = [];
 for i = 1:length(group_ID)
     sbj_name = group_ID{i,1};
     disp(['Load dataset ' sbj_name ' for session ' sessions{2}]);
-    load_file = [folderpath '\' sbj_name '\' sessions{2} '\' sbj_name '_' sessions{2} '_after_wavelet.mat'];
+    load_file = [folderpath '\' sbj_name '\' sessions{2} '\' sbj_name '_' sessions{2} '_after_norm_power.mat'];
     load(load_file)
     [~,t_wndw(1)] = min(abs(EEG.times-time_window(1)));
     [~,t_wndw(2)] = min(abs(EEG.times-time_window(2)));
@@ -100,15 +100,15 @@ for i = 1:size(data_session_one,2)
     t = table(gidx',data_session_one(:,i),data_session_two(:,i),'VariableNames',{'group','meas_1','meas_2'});   
     
     % group effect
-    [tbl_p,tbl_m] = anova1(t.meas_2,gidx','off');
-    P_map(i) = tbl_p;
-    F_map(i) = abs(tbl_m{2,5});
+%     [tbl_p,tbl_m] = anova1(t.meas_2,gidx','off');
+%     P_map(i) = tbl_p;
+%     F_map(i) = abs(tbl_m{2,5});
     
     % Interaction effect (group*time)
-%     rm = fitrm(t,'meas_1-meas_2 ~ group','WithinDesign',Meas);
-%     ranovatbl = ranova(rm);
-%     P_map(i) = ranovatbl.pValue(2);
-%     F_map(i) = abs(ranovatbl.F(2));
+    rm = fitrm(t,'meas_1-meas_2 ~ group','WithinDesign',Meas);
+    ranovatbl = ranova(rm);
+    P_map(i) = ranovatbl.pValue(2);
+    F_map(i) = abs(ranovatbl.F(2));
 end
 
 %%
@@ -124,8 +124,9 @@ topo_P = topo_P <= .05;
 
 clustsum_obs = zeros(1,nblobs);
 
+abs_topo_F = abs(topo_F);
 for i=1:nblobs
-    clustsum_obs(i) = sum(topo_F(obs_P(:)==i));
+    clustsum_obs(i) = sum(abs_topo_F(obs_P(:)==i));
 end
 
 
@@ -137,6 +138,10 @@ max_perm = zeros(1,perm_s);
 %% Interaction effect:
 %combine datasets and shuffle data
 
+% for group difference
+% perm_set = data_session_one; % or data_session_two;
+
+%for interaction
 perm_set = [data_session_one;data_session_two];
 t_p = t;
 n = size(perm_set,1);
@@ -155,15 +160,15 @@ while perm_i <= perm_s
        t_p.meas_2 = permData(length(group_ID)+1:end);
        
        % group effect
-        [perm_tbl_p,perm_tbl_m] = anova1(t_p.meas_2,gidx','off');
-        permP_map(i) = perm_tbl_p;
-        permF_map(i) = abs(perm_tbl_m{2,5});
+%         [perm_tbl_p,perm_tbl_m] = anova1(t_p.meas_2,gidx','off');
+%         permP_map(i) = perm_tbl_p;
+%         permF_map(i) = abs(perm_tbl_m{2,5});
     
         % Interaction effect (group*time)
-    %     rm_p = fitrm(t_p,'meas_1-meas_2 ~ group','WithinDesign',Meas);
-    %     perm_tbl = ranova(rm_p);
-    %     permP_map(i) = perm_tbl.pValue(2);
-    %     permF_map(i) = abs(perm_tbl.F(2));
+        rm_p = fitrm(t_p,'meas_1-meas_2 ~ group','WithinDesign',Meas);
+        perm_tbl = ranova(rm_p);
+        permP_map(i) = perm_tbl.pValue(2);
+        permF_map(i) = abs(perm_tbl.F(2));
    end
        % topoplot grids of P-values
     [~,perm_P] = topoplot(permP_map,chanlocs,'noplot','on');
@@ -176,6 +181,7 @@ while perm_i <= perm_s
     [perm_P,perm_nblobs] = bwlabeln(perm_P);
     
     clustsum = zeros(1,perm_nblobs);
+    perm_F = abs(perm_F);
     if find(perm_nblobs)
         for iii=1:perm_nblobs
             clustsum(iii) = sum(perm_F(perm_P(:)==iii));

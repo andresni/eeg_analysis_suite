@@ -50,14 +50,14 @@ ValData = diag(ValData*ValData'); %reak single values
 
 % decompress to 99.9% of the variance
 perVar = ones(1,size(ValData,1));
-k = 0;
-i = 1;
-while k < 99.9
+k = 100;
+i = size(ValData,1);
+while k > 99.99
     k = (sum(ValData(1:i))/sum(ValData(:)))*100;
-    i = i+1;
+    i = i-1;
 end
 
-EEG.lastPC = i;
+EEG.lastPC = i+1;
 
 % keep the 99.9% components and multiply them with the original data
 % then decompress the data

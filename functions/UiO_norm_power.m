@@ -47,6 +47,11 @@ bl_range = [str2double(data_struct.baseline_start) (str2double(data_struct.basel
 
 baseline_power = median(EEG.data(:,:,baselineidx(1):baselineidx(2)),3);
 
+%% new baseline normalization for DAVOS study
+% baseline_power = EEG.bl;
+
+%%
+
 if str2double(data_struct.baseline_method) == 1
     
     % first option ERD/ERS using median    

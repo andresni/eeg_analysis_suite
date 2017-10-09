@@ -51,18 +51,18 @@ if find(cell2mat(strfind({EEG.chanlocs.labels},'EOG')))
     
     label_idx = label_idx == 1;
     
-    if ndims(EEG.data)==3
-        EEG.data(label_idx,:,:) = [];
-    elseif ndims(EEG.data)==2
-        EEG.data(label_idx,:) = [];
-    else
-        error('not 2 and not 3 dimensions. What else could it be?')
-    end
+%     if ndims(EEG.data)==3
+%         EEG.data(label_idx,:,:) = [];
+%     elseif ndims(EEG.data)==2
+%         EEG.data(label_idx,:) = [];
+%     else
+%         error('not 2 and not 3 dimensions. What else could it be?')
+%     end
     EEG.chanlocs(label_idx) = [];
 end
 
 
-%% if 3D, restrict to trials
+%% if 3D, restrict to mean over trials after wavelet transform
 % remove trials and keep only the relevent trials according to the csv-file
 % the programming is complicated and maybe week because it is late and I am tired now ;-)
 
@@ -119,15 +119,41 @@ if ndims(EEG.data) > 2
 
     good_trials = sort(unique(good_trials));
 
+    % now, good_trials are determined but we already deleted bad trials. So
+    % we have to add the deleted trials before cutting for good-trials
     for i = 1:length(EEG.accBadEpochs);
         if find(EEG.accBadEpochs(i) == good_trials)
             good_trials(EEG.accBadEpochs(i) == good_trials) = [];
         end
         EEG.data = cat(3,EEG.data(:,:,1:EEG.accBadEpochs(i)-1), zeros(size(EEG.data,1),size(EEG.data,2)), EEG.data(:,:,EEG.accBadEpochs(i):end));
+        fake_epoch = EEG.epoch(1);
+        first_epochs = EEG.epoch(1:EEG.accBadEpochs(i)-1);
+        second_epochs = EEG.epoch(EEG.accBadEpochs(i):end);
+        EEG.epoch = [first_epochs,fake_epoch,second_epochs];
     end
 
     EEG.data = EEG.data(:,:,good_trials);
+    EEG.epoch = EEG.epoch(good_trials);
 end
+
+%% baseline indices because of fixation cross (only for Study DAVOS)
+
+% for trialI = 1:length(EEG.epoch)
+%     bl_idx_cell = [];
+%     bl_idx = [];
+%     bl_idx_cell = strfind(EEG.epoch(trialI).eventtype,'S  1');
+%     for i = 1:length(bl_idx_cell)
+%         if ~isempty(bl_idx_cell{i} == 1)
+%             bl_idx(i) = 1;
+%         end
+%     end
+%     bl_idx = bl_idx == 1;
+%     if isempty(bl_idx)
+%         bl_trial(trialI) = {-2000};
+%     else
+%         bl_trial(trialI) = EEG.epoch(trialI).eventlatency(bl_idx);
+%     end
+% end
 
 %% start with wavelet transformation for each channel
 dataTransformed = zeros(size(EEG.data,1),str2double(data_struct.wavelet_f_numb), ...
@@ -197,6 +223,22 @@ for chan = 1:size(EEG.data,1)
         if ndims(EEG.data) > 2
             convolution_result_fft = reshape(convolution_result_fft,size(EEG.data,2),size(EEG.data,3));
             tf_data(fi,:) = mean(abs(convolution_result_fft).^2,2);
+            
+            % only for DAVOS study
+%             bl_copy = [];
+%             sampleBins = 502;
+%             for trl = 1:size(EEG.data,3)
+%                 step_trial = [];
+%                 [~,blIdx(1)] = min(abs(EEG.times - (bl_trial{trl} - (0.5/(1/EEG.srate)))));
+%                 [~,blIdx(2)] = min(abs(EEG.times - bl_trial{trl} - 1));
+%                 step_trial = abs(convolution_result_fft(blIdx(1):blIdx(2),trl)).^2;
+%                 if length(step_trial) < sampleBins
+%                     step_trial(end+1:sampleBins) = NaN;
+%                 end
+%                 bl_copy(trl,:) = step_trial;
+%             end
+%             bl_mean(fi) = nanmedian(nanmean(bl_copy,1),2);
+            
         else
             tf_data(fi,:) = abs(convolution_result_fft).^2;
         end
@@ -205,12 +247,15 @@ for chan = 1:size(EEG.data,1)
     end
     
     dataTransformed(chan,:,:) = tf_data;
+%     blTransformed(chan,:) = bl_mean;
 
     disp(['Wavelet decomposition done for channel ' int2str(chan) ' of ' int2str(size(EEG.data,1)) ])
 end
 
 EEG.data = dataTransformed;
+% EEG.bl = blTransformed;
 
+%%
 % loc file entry
 locFile{end+1} = {'after_wavelet',['Wavelet decomposition is done between ' num2str(min_f) ' and ' num2str(max_f) ...
     ' Hz in logarithmic space with ' num2str(num_freq) ' bins and the number of cycles changed according to the frequency from ' ...

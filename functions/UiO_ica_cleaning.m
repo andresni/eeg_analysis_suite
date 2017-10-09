@@ -204,6 +204,7 @@ if find(cell2mat(strfind({EEG.chanlocs.labels},'EOG')))
         end
     end
     
+    label_idx = label_idx == 1;
     if ndims(EEG.data)==3
         EEG.data(label_idx,:,:) = [];
     elseif ndims(EEG.data)==2
@@ -211,7 +212,10 @@ if find(cell2mat(strfind({EEG.chanlocs.labels},'EOG')))
     else
         error('not 2 and not 3 dimensions. What else could it be?')
     end
+    EEG.chanlocs(label_idx) = [];
 end
+
+disp([num2str(length(badICs)) ' ICs rejected']);
 
 % loc file entry
 locFile{end+1} = {'ica_cleaned',['data is cleaned by ICA. In total ' num2str(length(badICs)) ...

@@ -28,7 +28,8 @@ if nargin < 2
 end
 
 
-% check if EEG structure is provided. If not, load previous data
+% check if EEG structure is provided. If not, load previous data (in this
+% case "epoched" and not "after_pca" because I do not want pca!
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
         [EEG,locFile] = UiO_load_data(data_struct,subj_name,'after_pca');   
@@ -45,16 +46,15 @@ rankIDX = rank(dataRank);
 
 % perform ICA on reduced rank after pca
 if isfield(EEG,'lastPC')
-    lastPC = EEG.lastPC-1;
-    if lastPC > rankIDX
-        lastPC = rankIDX-1;
-        dsip(['Rank violation: reducing ICA to ' num2str(rank) ' components']);
-    end
+    lastPC = EEG.lastPC;
+%     if lastPC > rankIDX
+%         lastPC = rankIDX;
+%         dsip(['Rank violation: reducing ICA to ' num2str(rankIDX) ' components']);
+%     end
     EEG = pop_runica(EEG,'pca',lastPC,'extended',1,'interupt','on');
 else
     if rankIDX < size(EEG.data,1)
-        rankIDX = rankIDX-1;
-        dsip(['Rank violation: reducing ICA to ' num2str(rank) ' components']);
+        dsip(['Rank violation: reducing ICA to ' num2str(rankIDX) ' components']);
         EEG = pop_runica(EEG,'pca',rankIDX,'extended',1,'interupt','on');
     else
         EEG = pop_runica(EEG,'extended',1,'interupt','on');

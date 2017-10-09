@@ -82,6 +82,6 @@ disp(['save file: ' save_name]);
 save([save_file '.mat'],'EEG','-v7.3');
 save([save_loc '.mat'],'locFile');
 
-pause(0.5)
+pause(0.1)
 
 end
