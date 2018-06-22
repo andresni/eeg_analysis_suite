@@ -6,9 +6,9 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 
-function [] = eeganalysis
+function [] = eeganalysis(sbj,csvname,fldnames1,param)
 
-clear all
+clear
 
 csvname = uigetfile('','choose the csv data in private folder (change file format to "All Files")');
 csvname(end-3:end) = [];
@@ -16,6 +16,10 @@ csvname(end-3:end) = [];
 %%Calling the read csv file function
 
 param=readcsv(csvname);
+
+% distcomp.feature( 'LocalUseMpiexec', false );
+% pool = parpool();
+
 
 % subject names
 fldnames1 = fieldnames(param);
@@ -78,6 +82,8 @@ for sbj = 1:size(fldnames1,1)
         end
     end
 end
+
+% delete(pool)
 
 end
 

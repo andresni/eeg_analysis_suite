@@ -50,6 +50,7 @@ end
 %% remove EOG channels
 if find(cell2mat(strfind({EEG.chanlocs.labels},'EOG')))
     label_cell = strfind({EEG.chanlocs.labels},'EOG');
+    label_idx = zeros(length(label_cell),1);
     for i = 1:length(label_cell)
         if ~isempty(label_cell{i} == 1)
             label_idx(i) = 1;
@@ -138,8 +139,6 @@ end
 
 
 %% start with wavelet transformation for each channel
-dataTransformed = zeros(size(EEG.data,1),str2double(data_struct.wavelet_f_numb), ...
-        size(EEG.data,2));
 
 % set lower and higher frequency edge from csv-file (2)
 delim_idx = strfind(data_struct.wavelet_f_range,'-');
@@ -188,11 +187,12 @@ high_pliWindow = str2double(data_struct.PLIwindow_end);
 sprintf(' Now this amazing script will perform PLI, ISPC, wPLI and dwPLI... \n for every channel combination and every frequency. This will take a looooong time...')
     
 %preallocation:
-PLI = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies));
-ISPC = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies));
-wPLI = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies));
-dwPLI = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies));
-
+% PLI = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies));
+% ISPC = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies));
+% wPLI = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies));
+% dwPLI = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies));
+dwPLI_trials_old = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies),length(pliWindow(1):pliWindow(2)));
+dwPLI_trials_new = zeros(size(EEG.data,1),size(EEG.data,1),length(frequencies),length(pliWindow(1):pliWindow(2)));
 
 for chan1 = 1:size(EEG.data,1)
     for chan2 = 1:size(EEG.data,1)
@@ -208,8 +208,8 @@ for chan1 = 1:size(EEG.data,1)
         end
 
         % now, perform wavelet decomposition for each frequency of each channel
-        for fi=1:length(frequencies)
-
+        for fi = 1:length(frequencies)
+            
             % create complex wavelet
             wavelet = (pi*frequencies(fi)*sqrt(pi))^-.5 * exp(2*1i*pi*frequencies(fi).*time) .* exp(-time.^2./(2*( wavelet_cycles(fi) /(2*pi*frequencies(fi)))^2))/frequencies(fi);
             fft_wavelet = fft(wavelet,n_conv_pow2);
@@ -235,51 +235,71 @@ for chan1 = 1:size(EEG.data,1)
             end
 
             % compute cross spectral density
-            crossSD = convolvedData1 .* conj(convolvedData2);
-            
-            % compute PLI
-            if ndims(EEG.data) > 2
-                PLI(chan1,chan2,fi)  = mean(abs(mean(sign(imag(crossSD(pliWindow(1):pliWindow(2),:))),1))); %PLI computed over time and then mean PLI over trials
-            else
-                PLI(chan1,chan2,fi)  = abs(mean(sign(imag(crossSD(pliWindow(1):pliWindow(2)))),1));
-            end
+            crossSD = convolvedData1 .* conj(convolvedData2); 
 
-            % compute ISPC
-            if ndims(EEG.data) > 2
-                ISPC(chan1,chan2,fi) = mean(abs(mean(exp(1i*angle(crossSD(pliWindow(1):pliWindow(2),:))),1))); %ISPC computed over time and then mean over trials
-            else
-                ISPC(chan1,chan2,fi) = abs(mean(exp(1i*angle(crossSD(pliWindow(1):pliWindow(2)))),1));
-            end
-            
-            % compute wPLI (Vink et al., 2011)
-            if ndims(EEG.data) > 2
-                wPLI(chan1,chan2,fi) = mean(abs( mean( abs(imag(crossSD(pliWindow(1):pliWindow(2),:))).*sign(imag(crossSD(pliWindow(1):pliWindow(2),:))) ,1) ) ...
-                    ./mean(abs(imag(crossSD(pliWindow(1):pliWindow(2),:))),1)); %wPLI computed over time and then mean over trials
-            else
-                wPLI(chan1,chan2,fi) = abs( mean( abs(imag(crossSD(pliWindow(1):pliWindow(2)))).*sign(imag(crossSD(pliWindow(1):pliWindow(2)))) ,1) ) ...
-                    ./mean(abs(imag(crossSD(pliWindow(1):pliWindow(2)))),1);
-            end
+            % compute PLI
+%             if ndims(EEG.data) > 2
+%                 PLI(chan1,chan2,fi)  = abs(nanmean(mean(sign(imag(crossSD(pliWindow(1):pliWindow(2),:))),1))); %PLI computed over time and then mean PLI over trials
+%             else
+%                 PLI(chan1,chan2,fi)  = abs(mean(sign(imag(crossSD(pliWindow(1):pliWindow(2)))),1));
+%             end
+% 
+%             % compute ISPC
+%             if ndims(EEG.data) > 2
+%                 ISPC(chan1,chan2,fi) = abs(nanmean(mean(exp(1i*angle(crossSD(pliWindow(1):pliWindow(2),:))),1))); %ISPC computed over time and then mean over trials
+%             else
+%                 ISPC(chan1,chan2,fi) = abs(mean(exp(1i*angle(crossSD(pliWindow(1):pliWindow(2)))),1));
+%             end
+%             
+%             % compute wPLI (Vink et al., 2011)
+%             if ndims(EEG.data) > 2
+%                 wPLI(chan1,chan2,fi) = abs(nanmean(mean( abs(imag(crossSD(pliWindow(1):pliWindow(2),:))).*sign(imag(crossSD(pliWindow(1):pliWindow(2),:))) ,1) ) ...
+%                     ./mean(mean(abs(imag(crossSD(pliWindow(1):pliWindow(2),:))),1))); %wPLI computed over time and then mean over trials
+%             else
+%                 wPLI(chan1,chan2,fi) = abs( mean( abs(imag(crossSD(pliWindow(1):pliWindow(2)))).*sign(imag(crossSD(pliWindow(1):pliWindow(2)))) ,1) ) ...
+%                     ./mean(abs(imag(crossSD(pliWindow(1):pliWindow(2)))),1);
+%             end
             
             %compute dwPLI
-            imagsum      = sum(imag(crossSD(pliWindow(1):pliWindow(2),:)),1);
-            imagsumW     = sum(abs(imag(crossSD(pliWindow(1):pliWindow(2),:))),1);
-            debiasfactor = sum(imag(crossSD(pliWindow(1):pliWindow(2),:)).^2,1);
-            dwPLI(chan1,chan2,fi)  = mean((imagsum.^2 - debiasfactor)./(imagsumW.^2 - debiasfactor)); %dwPLI computed over time and then mean over trials
+%             if ndims(EEG.data) > 2
+                imagsum = sum((imag(crossSD(pliWindow(1):pliWindow(2),:)).^2) .*sign(imag(crossSD(pliWindow(1):pliWindow(2),:))),2);
+                imagsumW = sum(imag(crossSD(pliWindow(1):pliWindow(2),:)).^2,2);
+                dwPLI_trials_old(chan1,chan2,fi,1:length(imagsum)) = imagsum./imagsumW;
+%                 
+                imagsum = sum(imag(crossSD(pliWindow(1):pliWindow(2),:)),2).^2 .*sign(sum(imag(crossSD(pliWindow(1):pliWindow(2),:)),2));
+                imagsumW = sum(abs(imag(crossSD(pliWindow(1):pliWindow(2),:))),2).^2;
+                dwPLI_trials_new(chan1,chan2,fi,1:length(imagsum)) = imagsum./imagsumW;
+%                 dwPLI(chan1,chan2,fi) = std(imagsum./imagsumW);
 
+%                 imagsum      = nanstd(sum(imag(crossSD(pliWindow(1):pliWindow(2),:)),1));
+%                 imagsumW     = nanstd(sum(abs(imag(crossSD(pliWindow(1):pliWindow(2),:))),1));
+%                 debiasfactor = nanstd(sum(imag(crossSD(pliWindow(1):pliWindow(2),:)).^2,1));
+%                 dwPLI(chan1,chan2,fi)  = (imagsum.^2 - debiasfactor)./(imagsumW.^2 - debiasfactor); %dwPLI computed over time and then mean over trials
+%                 dwPLI(chan1,chan2,fi)  = (imagsum.^2)./(imagsumW.^2); %dwPLI computed over time and then mean over trials
+
+%             else
+%                 imagsum      = sum(imag(crossSD(pliWindow(1):pliWindow(2),:)),1);
+%                 imagsumW     = sum(abs(imag(crossSD(pliWindow(1):pliWindow(2),:))),1);
+%                 debiasfactor = sum(imag(crossSD(pliWindow(1):pliWindow(2),:)).^2,1);
+%                 dwPLI(chan1,chan2,fi,1:size(EEG.data,3)) = (imagsum.^2 - debiasfactor)./(imagsumW.^2 - debiasfactor);
+%             end
         end
 
         disp(['Connectivity computations done for ' int2str((chan1-1)*size(EEG.data,1)+chan2) ' out of ' int2str(size(EEG.data,1)*size(EEG.data,1)) ' combinations' ])
     end
 end
 
-EEG.PLI = PLI;
-EEG.ISPC = ISPC;
-EEG.wPLI = wPLI;
-EEG.dwPLI = dwPLI;
+% EEG.PLI = PLI;
+% EEG.ISPC = ISPC;
+% EEG.wPLI = wPLI;
+% EEG.dwPLI = dwPLI;
+EEG.dwPLI_trials_old = dwPLI_trials_old;
+EEG.dwPLI_trials_new = dwPLI_trials_new;
+EEG.data = [];
 
 %%
 % loc file entry
-locFile{end+1} = {'after_connectivity',['Connectivity is done between ' num2str(min_f) ' and ' num2str(max_f) ...
+locFile{end+1} = {'after_connectivity_times',['Connectivity is done between ' num2str(min_f) ' and ' num2str(max_f) ...
     ' Hz in logarithmic space with ' num2str(num_freq) ' bins and the number of cycles changed according to the frequency from ' ...
     num2str(low_cycle) ' cycles to ' num2str(high_cycle) ' cycles and connectivity is computed between' num2str(low_pliWindow) ' to ' num2str(high_pliWindow)]};
 

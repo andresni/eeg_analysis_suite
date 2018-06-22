@@ -12,7 +12,7 @@
 %   {'practice','savings'})
 %
 % This function performs cluster based statistics on the interaction
-% (group*time) effect. The functions asks for a group table. This should be
+% (group*time) effect. The function asks for a group table. This should be
 % a .csv file with the first column containing subject IDs and the second
 % column containing group IDs
 % 
@@ -129,94 +129,91 @@ for i=1:nblobs
     clustsum_obs(i) = sum(abs_topo_F(obs_P(:)==i));
 end
 
-
-permP_map = ones(size(EEG.data,1),1);
-permF_map = ones(size(EEG.data,1),1);
-
-max_perm = zeros(1,perm_s);
-
 %% Interaction effect:
-%combine datasets and shuffle data
+if ~isempty(clustsum_obs)
+    permP_map = ones(size(EEG.data,1),1);
+    permF_map = ones(size(EEG.data,1),1);
 
-% for group difference
-% perm_set = data_session_one; % or data_session_two;
 
-%for interaction
-perm_set = [data_session_one;data_session_two];
-t_p = t;
-n = size(perm_set,1);
-percentages = perm_s/10:perm_s/10:perm_s;
-percentages2 = 10:10:100;
+    %combine datasets and shuffle data
 
-perm_i = 1;
+    % for group difference
+    % perm_set = data_session_one; % or data_session_two;
 
-disp('start permutation testing. This may take a while');
+    %for interaction
+    perm_set = [data_session_one;data_session_two];
 
-while perm_i <= perm_s
-   for i = 1:size(EEG.data,1)
-       rpt = randperm(n);
-       permData = perm_set(rpt,i);
-       t_p.meas_1 = permData(1:length(group_ID));
-       t_p.meas_2 = permData(length(group_ID)+1:end);
-       
-       % group effect
-%         [perm_tbl_p,perm_tbl_m] = anova1(t_p.meas_2,gidx','off');
-%         permP_map(i) = perm_tbl_p;
-%         permF_map(i) = abs(perm_tbl_m{2,5});
-    
-        % Interaction effect (group*time)
-        rm_p = fitrm(t_p,'meas_1-meas_2 ~ group','WithinDesign',Meas);
-        perm_tbl = ranova(rm_p);
-        permP_map(i) = perm_tbl.pValue(2);
-        permF_map(i) = abs(perm_tbl.F(2));
-   end
-       % topoplot grids of P-values
-    [~,perm_P] = topoplot(permP_map,chanlocs,'noplot','on');
 
-    % topoplot grids of F-values
-    [~,perm_F] = topoplot(permF_map,chanlocs,'noplot','on');
+    t_p = t;
+    n = size(perm_set,1);
+    percentages = perm_s/10:perm_s/10:perm_s;
+    percentages2 = 10:10:100;
 
-    % building clusters
-    perm_P = perm_P <= .05;
-    [perm_P,perm_nblobs] = bwlabeln(perm_P);
-    
-    clustsum = zeros(1,perm_nblobs);
-    perm_F = abs(perm_F);
-    if find(perm_nblobs)
-        for iii=1:perm_nblobs
-            clustsum(iii) = sum(perm_F(perm_P(:)==iii));
+    perm_i = 1;
+    max_perm = zeros(1,perm_s);
+    disp('start permutation testing. This may take a while');
+
+    while perm_i <= perm_s
+       for i = 1:size(EEG.data,1)
+           rpt = randperm(n);
+           permData = perm_set(rpt,i);
+           t_p.meas_1 = permData(1:length(group_ID));
+           t_p.meas_2 = permData(length(group_ID)+1:end);
+
+           % group effect
+    %         [perm_tbl_p,perm_tbl_m] = anova1(t_p.meas_2,gidx','off');
+    %         permP_map(i) = perm_tbl_p;
+    %         permF_map(i) = abs(perm_tbl_m{2,5});
+
+            % Interaction effect (group*time)
+            rm_p = fitrm(t_p,'meas_1-meas_2 ~ group','WithinDesign',Meas);
+            perm_tbl = ranova(rm_p);
+            permP_map(i) = perm_tbl.pValue(2);
+            permF_map(i) = abs(perm_tbl.F(2));
+       end
+           % topoplot grids of P-values
+        [~,perm_P] = topoplot(permP_map,chanlocs,'noplot','on');
+
+        % topoplot grids of F-values
+        [~,perm_F] = topoplot(permF_map,chanlocs,'noplot','on');
+
+        % building clusters
+        perm_P = perm_P <= .05;
+        [perm_P,perm_nblobs] = bwlabeln(perm_P);
+
+        clustsum = zeros(1,perm_nblobs);
+        perm_F = abs(perm_F);
+        if find(perm_nblobs)
+            for iii=1:perm_nblobs
+                clustsum(iii) = sum(perm_F(perm_P(:)==iii));
+            end
+            max_perm(1,perm_i) = max(clustsum);
         end
-        max_perm(1,perm_i) = max(clustsum);
+
+        if ~isempty(find(percentages == perm_i))
+            disp([num2str(percentages2(percentages == perm_i)) ' % done']);
+        end
+        perm_i = perm_i +1;
+
+        clear rpt permData rm_p perm_tbl permP_map permF_map perm_map nblobs clustsum perm_nblobs
     end
 
-    if ~isempty(find(percentages == perm_i))
-        disp([num2str(percentages2(percentages == perm_i)) ' % done']);
-    end
-    perm_i = perm_i +1;
-    
-    clear rpt permData rm_p perm_tbl permP_map permF_map perm_map nblobs clustsum perm_nblobs
-end
 
-
-alpha_idx = floor(0.05 * perm_s);
-stat_cluster = [];
-if find(max_perm)
-    temp=sort(max_perm);
-    CRIT_CLUSTER=temp(end-alpha_idx); 
-    clear temp;
-    stat_cluster = clustsum_obs >= CRIT_CLUSTER;
+    stat_cluster = sum(repmat(abs(max_perm)',1,length(clustsum_obs)) > repmat(clustsum_obs,length(max_perm),1), 1) / perm_s;
+else
+    stat_cluster = [];
 end
 
 % start plotting
 if find(stat_cluster)
     combi = [];
-    [~,idx] = find(stat_cluster);
+    [~,idx] = find(stat_cluster < 0.05);
     sum_map = zeros(length(idx),size(topo_F,1),size(topo_F,2));
     for i = 1:length(idx)
         sum_map(i,:,:) = obs_P == idx(i);
     end
     sum_map = squeeze(sum(sum_map,1));
-    sum_map( sum_map == 1 ) = 100;
+    sum_map( sum_map >= 1 ) = 100;
     combi(1,:,:) = sum_map;
     combi(2,:,:) = topo_F;
     combi = squeeze(sum(combi,1));
