@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_norm_power(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_norm_power(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the 'after_wavelet' data (if available)
 % subj_name: subject name according to csvfile
-% locFile: locFile of previous function. If empty [] this function will
-%       load the 'after_wavelet' locFile (if availeble)
+% logFile: logFile of previous function. If empty [] this function will
+%       load the 'after_wavelet' logFile (if availeble)
 %
 % This function normalizes the EEG data (after wavelet decomposition) according
 % to a baseline period (set in csv-file). Several options of normalization
@@ -21,7 +21,7 @@
 % benjamin.thuerer@kit.edu
 %
 
-function [EEG,locFile] = UiO_norm_power(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_norm_power(data_struct,subj_name,EEG,logFile)
 
 
 if nargin < 2
@@ -31,9 +31,9 @@ end
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'after_wavelet');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'after_wavelet');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 
@@ -64,12 +64,12 @@ elseif str2double(data_struct.baseline_method) == 2
     norm_method = 'db';
 end
 
-EEG.data = normChange;
+EEG.data = abs(normChange);
 
-locFile{end+1} = {'after_norm_power',['Power normalization is done using ' norm_method]};
+logFile{end+1} = {'after_norm_power',['Power normalization is done using ' norm_method]};
 
 if str2double(data_struct.plot_always)==1
-    UiO_plots(data_struct,subj_name,EEG,locFile);
+    UiO_plots(data_struct,subj_name,EEG,logFile);
 end
 
 end

@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_plots(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_plots(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the last processed data (if availeble)
 % subj_name: subject name according to csvfile
-% locFile: locFile of previous function. If empty [] this function will
-%       load the last processed locFile (if availeble)
+% logFile: logFile of previous function. If empty [] this function will
+%       load the last processed logFile (if availeble)
 %
 % This function will plot the EEG at the step provided in the csvfile or at
 % the step which is processed before this plot function
@@ -19,7 +19,7 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 % 
-function [EEG,locFile] = UiO_plots(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_plots(data_struct,subj_name,EEG,logFile)
 
 if nargin < 2
     error('provide at least data_struct and subject name. See help UiO_trials')
@@ -34,14 +34,14 @@ end
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'epoched');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'epoched');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 
 % plot according to the data and what make sense
-if strcmp(locFile{end}{1},'after_tms')
+if strcmp(logFile{end}{1},'after_tms')
     eegplot(EEG.data);
     
     % compute power spectral density
@@ -54,7 +54,7 @@ if strcmp(locFile{end}{1},'after_tms')
     title('Power spectral density over all channels')
     xlabel('Frequency (Hz)')
     
-elseif strcmp(locFile{end}{1},'preprocessed')
+elseif strcmp(logFile{end}{1},'preprocessed')
     eegplot(EEG.data);
     
     % compute power spectral density
@@ -67,7 +67,7 @@ elseif strcmp(locFile{end}{1},'preprocessed')
     title('Power spectral density over all channels')
     xlabel('Frequency (Hz)')
     
-elseif strcmp(locFile{end}{1},'after_pca')
+elseif strcmp(logFile{end}{1},'after_pca')
     eegplot(EEG.data);
     
     % compute power spectral density
@@ -80,7 +80,7 @@ elseif strcmp(locFile{end}{1},'after_pca')
     title('Power spectral density over all channels')
     xlabel('Frequency (Hz)')
     
-elseif strcmp(locFile{end}{1},'after_ica')
+elseif strcmp(logFile{end}{1},'after_ica')
     eegplot(EEG.data);
     
     % compute power spectral density
@@ -169,7 +169,7 @@ elseif strcmp(locFile{end}{1},'after_ica')
         end
     end
     
-elseif strcmp(locFile{end}{1},'ica_cleaned')
+elseif strcmp(logFile{end}{1},'ica_cleaned')
     eegplot(EEG.data);
     
     % compute power spectral density
@@ -181,11 +181,11 @@ elseif strcmp(locFile{end}{1},'ica_cleaned')
     plot(f,PSD(1:128))
     title('Power spectral density over all channels')
     xlabel('Frequency (Hz)')
-elseif strcmp(locFile{end}{1},'after_inverse_model')
+elseif strcmp(logFile{end}{1},'after_inverse_model')
     figure;
     imagesc(EEG.significant_sources)
 %     axis([EEG.times(1) EEG.times(end) 1 size(EEG.significant_sources,1)]);
-elseif strcmp(locFile{end}{1},'after_pci')  
+elseif strcmp(logFile{end}{1},'after_pci')  
     SSsum = sum(EEG.significant_sources',1);
     [~,index]=sort(SSsum);
     sorted=EEG.significant_sources(index,:);

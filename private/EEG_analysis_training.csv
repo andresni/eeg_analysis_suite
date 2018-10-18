@@ -1,0 +1,90 @@
+Subjects;test;;;Comments
+session;test;;;
+experiment;test;;;
+;;;;
+;;;;
+;;;;
+load_data;0;;;%% if you want to load a specific already saved .mat file state here the name (e.g. 's101_s1_after_pca.mat'
+save_folder;Z:\test_data\sleepDep_pilot\;;;%% 0=save in the same folder as eeg-header file, else=save in the folder provided
+lftsource;0;;;%% lead field matrix file of MRI
+locsource;0;;;%% locations file for EEG channels (if 0, load template of eeglab)
+vhdrsource;Z:\test_data\sleepDep_pilot\sleeppilot_20182109_0002_eyes-closed.vhdr;;;
+UiO_TMS_correction;0;;;
+UiO_preprocessing;1;;;
+UiO_trials;0;;;
+UiO_pca;2;;;
+UiO_ica;4;;;
+UiO_ica_cleaning;6;;;
+UiO_wavelet;0;;;
+UiO_norm_power;0;;;
+UiO_inverse_model;0;;;
+UiO_connectivity;0;;;
+UiO_pci;0;;;
+UiO_save;3,5;;;%%if you want to run a function several times, just add the indices after a comma (without space)
+UiO_plot;0;;;
+UiO_summaryplot;0;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+;;;;
+%%This is line 34. Do not cross%%;;;;
+%%Preprocessing_parameters%%;;;;
+continuous;yes;;;%should the data processed as continuous data (yes) or does it have triggers for epoching (no)
+trigger_name;;;;%if data should become epoched, state the trigger (e.g. 'S1')
+downsample_rate;1000;;;%what do you want to downsample to, in hz
+interpolate_lower_tms;-1;;;%interpolation lower end
+interpolate_higher_tms;6;;;%interpolation higher end
+crop_data;0;;;"%crops the continuous data before preprocessing. x,y= crop to time bins from beginning (x) to end (y) (e.g. 1800,234000; 0 = no cropping)"
+highpassfilter;1;;;"%higphass filter in hz (bandpass edge; cut-off frequency is different (for 1 Hz it is 0.5 Hz))"
+lowpassfilter;80;;;"%lowpassfilter in hz (bandpass edge; Cut-off frequency is different)"
+detrend;1;;;"%reduce linear trends (NOT recommendet for ERPs) 1 = yes; 0 = no"
+notch_filter;0;;;"%0 = no notch filter (uses cleanline for line noise); 1 = IIR notch filter (-5 < frequency > +5 Hz)"
+linenoise_frequency;50;;;%linenoise removal around hz
+trial_start;-800;;;%start epoch in ms
+trial_end;1200;;;%end epoch in ms
+trial_threshold;100;;;%%if trial rejection automatic: rejection threshold in µV
+re_referencing;1;;;%%0= nor re-referencing, 1 = avg reference, otherwise: it references to that channel (ex. FP1)
+correction_sensitivity;19;;;%%5=very strict, 30=very liberal, 19=good choice
+plot_always;0;;;%%1=plots data after every processing step, 0 = no plotting, if UiO_plot = 1 you should provide here at which state you want to plot your already saved data ('after_tms', 'preprocessed', 'after_pca', 'after_ica', 'ica_cleaned', 'after_inverse_model', 'after_pci')
+;;;;
+%%Switch channels;;;;
+switch_channels;0;;;"%Do you want to switch channel locations? 0 = no; 1 = yes"
+switch_names;AF8, FCz, AF7, AFz;;;% state the channels. First channel which should be replaced by the second channel (eg., AF8, FCz, AF7, Afz)
+;;;;
+%%Remove channels;;;;
+remove_channels;0;;;"%Do you want to remove channels from analysis (EMG?)? 0 = no; state channels (eg. EMGh, EMGn) = otherwise"
+;;;;
+%%PCI;;;;
+baseline_sources;200;;;%%baseline length for inverse model and bootstraping
+downsample_source;1;;;%%how much do you want to downsample the sources
+downsample_pci_source;10;;;"%%how much downsample pci result in source domain (1: no downsampling, 2: every other
+point, 3: every third etc)"
+downsample_pci_time;1;;;"%%how much downsample pci result in time domain (1: no downsampling, 2: every other
+point, 3: every third etc)"
+;;;;
+%%wavelet parameters;;;;
+wavelet_length;2;;;"%% length of the wavelet in seconds (should not be smaller than 1s; 2s is a good choice)"
+wavelet_f_range;2-100;;;%% range of the frequency spectra (e.g. 2-100 decomposes data between 2 and 100 hz)
+wavelet_f_numb;40;;;%% number of bins between lower and upper frequency edge (e.g. 40 would make 40 bins between 2 and 100 hz in logarithmic space)
+wavelet_cycles;5,19;;;%% number of lower and upper cycles (should not be lower than 3 and higher than 20). This changes logarithmic with frequency
+mean_trials;1,2-30;;;%% wavelet function will compute the mean over the trials wich are stated here. Commata and hyphes are allowed (e.g. 1,2,3-5,10-20)
+;;;;
+%%Connectivity computation;;;;
+PLIwindow_start;-400;;;%% start time in ms for connectivity computation
+PLIwindow_end;400;;;%% end time in ms for connectivity computation
+;;;;
+%%Normalize power;;;;
+baseline_length;1000;;;%% length of the baseline vector in the time domain in ms (e.g. 500ms)
+baseline_start;-1500;;;%% starting point of the baseline vector in the dataset in ms (e.g. -1000ms would mean that 1000ms before movement start the baseline will be start and end after baseline_length)
+baseline_method;1;;;%% option how frequency power is normalized. 1: percentage change (ERD/ERS), 2: decibel (db)
+;;;;
+%%Automatic_rejection_parameters%%;;;;
+tms_interpolation;1;;;%%1=automatic,2=manual by inspection,3=manual by csv-input
+cleaning_artifacts;1;;;%%1=there should be some sort of cleaning (using ASR), 0=no ASR cleaning
+channel_rejection;1;;;%%1=automatic by using clean_rawdata, 2=manual by visual inspection, 0=no channel rejection
+trial_rejection;0;;;%%1=automatic by threshold parameter (above), 2=manual by visual inspection, 0=no trial rejection
+ica_rejection;2;;;%%1=automatic using ADJUST, 2=manually by inspection

@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_inverse_model(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_inverse_model(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the 'after_ica' data (if availeble)
 % subj_name: subject name according to csvfile
-% locFile: locFile of previous function. If empty [] this function will
-%       load the 'after_ica' locFile (if availeble)
+% logFile: logFile of previous function. If empty [] this function will
+%       load the 'after_ica' logFile (if availeble)
 %
 % This function will do inverse modelling on the EEG data. Make sure that
 % you provide the lead field matrix (lft), surface (srf) and location (loc)
@@ -20,7 +20,7 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 %
-function [EEG,locFile] = UiO_inverse_model(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_inverse_model(data_struct,subj_name,EEG,logFile)
 
 if nargin < 2
     error('provide at least data_struct and subject name. See help UiO_pca')
@@ -30,9 +30,9 @@ end
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'ica_cleaned');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'ica_cleaned');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 
@@ -251,11 +251,11 @@ disp([ num2str(Anew) '% significant sources between 0 and 350ms detected']);
 EEG.significant_sources = SA;
 
 % loc file entry
-locFile{end+1} = {'after_inverse_model',['data now provides source activity of ' ...
+logFile{end+1} = {'after_inverse_model',['data now provides source activity of ' ...
     num2str(n_size) ' sources. The ratio is ' num2str(Anew)]};
 
 if str2double(data_struct.plot_always)==1
-    UiO_plots(data_struct,subj_name,EEG,locFile);
+    UiO_plots(data_struct,subj_name,EEG,logFile);
 end
 
 disp('data inverse modelling is done')

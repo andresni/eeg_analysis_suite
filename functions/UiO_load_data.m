@@ -1,14 +1,14 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_load_data(data_struct,subj_name,file_step)
+% [EEG,logFile] = UiO_load_data(data_struct,subj_name,file_step)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % subj_name: subject name according to csvfile
 % file_step: last step in EEG-analysis to load that file
 %
-% This function will load the eeg file and locFile of the last processing
+% This function will load the eeg file and logFile of the last processing
 % step in the EEG-analysis.
 % 
 % by questions:
@@ -21,7 +21,7 @@ function [EEGF,LOCF] = UiO_load_data(data_struct,subj_name,file_step,specific_na
 % create file and loc name
 if nargin < 4
     load_name = [subj_name{1} '_' data_struct.session '_' file_step];
-    loc_name = [subj_name{1} '_' data_struct.session '_locFile'];
+    loc_name = [subj_name{1} '_' data_struct.session '_logFile'];
     loc_error = 0;
 else
     load_name = data_struct.load_data;
@@ -31,7 +31,7 @@ else
     % can not read loc file because loc file might not available or
     % different name then eeg-file...
     loc_error = 1;
-    loc_name = [subj_name{1} '_' data_struct.session '_locFile'];
+    loc_name = [subj_name{1} '_' data_struct.session '_logFile'];
 end
 
 % check if file_save path is provided and check for / or \
@@ -68,7 +68,7 @@ end
 if loc_error == 0
     load([load_loc '.mat']);
     EEGF = EEG;
-    LOCF = locFile;
+    LOCF = logFile;
 elseif loc_error == 1
     EEGF = EEG;
     LOCF = [];
@@ -84,4 +84,5 @@ elseif loc_error == 2
     EEGF.srate = 1000;
     EEGF.times = -size(data_ssp,2)/2:size(data_ssp,2)/2-1;
     LOCF = [];
+end
 end

@@ -1,7 +1,7 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_cluster_statistics(time_window,frequency,perm_s,conditions)
+% [EEG,logFile] = UiO_cluster_statistics(time_window,frequency,perm_s,conditions)
 % 
 % time_window: time window in ms for which statistics should be performed
 %   (e.g. [-500 0])

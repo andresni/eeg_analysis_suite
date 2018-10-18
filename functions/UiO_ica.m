@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_ica(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_ica(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the last processed data (if availeble)
 % subj_name: subject name according to csvfile
-% locFile: locFile of previous function. If empty [] this function will
-%       load the last processed locFile (if availeble)
+% logFile: logFile of previous function. If empty [] this function will
+%       load the last processed logFile (if availeble)
 %
 % This function will perform ICA either on continous or epoched data.
 % Please note that this may take a while to run. ICA tries to work with
@@ -21,7 +21,7 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 %
-function [EEG,locFile] = UiO_ica(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_ica(data_struct,subj_name,EEG,logFile)
 
 if nargin < 2
     error('provide at least data_struct and subject name. See help UiO_ica')
@@ -31,9 +31,9 @@ end
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'after_pca');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'after_pca');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 
@@ -62,10 +62,10 @@ end
 
 
 % loc file entry
-locFile{end+1} = {'after_ica',['Independent components are computed and stored in the EEG struct']};
+logFile{end+1} = {'after_ica',[int2str(length(EEG.icasphere)) 'Independent components are computed and stored in the EEG struct']};
 
 if str2double(data_struct.plot_always)==1
-    UiO_plots(data_struct,subj_name,EEG,locFile);
+    UiO_plots(data_struct,subj_name,EEG,logFile);
 end
 
 disp('data ICA computing is done')

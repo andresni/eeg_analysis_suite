@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_preprocessing(data_struct,~,EEG,locFile)
+% [EEG,logFile] = UiO_preprocessing(data_struct,~,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the raw data (without TMS-artifact interpolation)
 % ~: subj_name not necessary for this function
-% locFile: locFile of previous function. If empty [] this function will be
-%       the first entry to the locFile
+% logFile: logFile of previous function. If empty [] this function will be
+%       the first entry to the logFile
 % 
 % This function does the necessary preprocessing steps for EEG analysis.
 % According to the csv-file, preprocessing is done using the specified parameters.
@@ -26,7 +26,7 @@
 % by questions:
 % benjamin.thuerer@kit.edu
 % 
-function [EEG,locFile] = KIT_preprocessing(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = KIT_preprocessing(data_struct,subj_name,EEG,logFile)
 
 if nargin < 1
     error('provide at least data_struct. See help UiO_preprocessing')
@@ -56,7 +56,7 @@ if isempty(EEG)
         end
     
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
   
@@ -541,8 +541,8 @@ end
 EEG.CHremoved = [];
 EEG.CHremoved = setdiff({chLocs.labels},{EEG.chanlocs.labels}); 
 
-% interpolate bad channels
-EEG = pop_interp(EEG, chLocs,'spherical'); %interpolate removed channels
+% save original channel locations for interpolation (see UiO_ica_cleaning)
+EEG.chLocs = chLocs;
 
 % re-reference the data either to a channel or average
 if isempty(str2num(data_struct.re_referencing))
@@ -573,13 +573,13 @@ else
 end
  
 % loc file entry
-locFile{end+1} = {'preprocessed',['preprocessed with (sampling rate; ' ...
+logFile{end+1} = {'preprocessed',['preprocessed with (sampling rate; ' ...
     'highpassfilter; lowpassfilter; burst criterion; line noise correction: ' ...
     num2str(Nsrate) '; ' num2str(HpassF) '; ' num2str(LpassF) '; ' ...
     num2str(BurstC) '; ' num2str(LNFreq)]};
 
 if str2double(data_struct.plot_always)==1
-    UiO_plots(data_struct,subj_name,EEG,locFile);
+    UiO_plots(data_struct,subj_name,EEG,logFile);
 end
 
 disp('data preprocessing is done')

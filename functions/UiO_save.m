@@ -1,13 +1,13 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_save(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_save(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % subj_name: subject name to store the file
 % EEG: EEG structure of previous function.
-% locFile: locFile of previous function.
+% logFile: logFile of previous function.
 % 
 % This function will save the eeg file (.mat) and the loc file (.txt) in the raw
 % data folder (if save_folder: 0 ) or in the provided folder path
@@ -19,20 +19,20 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 % 
-function [EEG,locFile] = UiO_save(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_save(data_struct,subj_name,EEG,logFile)
 
 if nargin < 4
-    error('this function needs data structure, subject name, processed EEG data, and locFile')
+    error('this function needs data structure, subject name, processed EEG data, and logFile')
 elseif isempty(EEG)
     error('this function needs processed EEG data. Run a processing step before this')
 end
 
-ending_name = locFile{end};
+ending_name = logFile{end};
 endName = ending_name{1};
 
 % create file and loc name
 save_name = [subj_name{1} '_' data_struct.session '_' endName];
-loc_name = [subj_name{1} '_' data_struct.session '_locFile'];
+loc_name = [subj_name{1} '_' data_struct.session '_logFile'];
 
 % save file and loc to the same folder as the raw data if no save_folder
 % path provided in csvfile
@@ -80,7 +80,7 @@ end
 disp(['save file: ' save_name]);
 % EEG.data = single(EEG.data);
 save([save_file '.mat'],'EEG','-v7.3');
-save([save_loc '.mat'],'locFile');
+save([save_loc '.mat'],'logFile');
 
 pause(0.1)
 

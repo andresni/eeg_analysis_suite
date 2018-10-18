@@ -5,7 +5,7 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 
-function [EEG,locFile] = UiO_summaryplot(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_summaryplot(data_struct,subj_name,EEG,logFile)
 % 
 % %% load raw-data for ERP:
 
@@ -61,9 +61,9 @@ function [EEG,locFile] = UiO_summaryplot(data_struct,subj_name,EEG,locFile)
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'after_pci');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'after_pci');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 

@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_trials(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_trials(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the last processed data (if availeble)
 % subj_name: subject name according to csvfile
-% locFile: locFile of previous function. If empty [] this function will
-%       load the last processed locFile (if availeble)
+% logFile: logFile of previous function. If empty [] this function will
+%       load the last processed logFile (if availeble)
 %
 % This function will epoch the continous data into trials and remove bad
 % 
@@ -18,7 +18,7 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 % 
-function [EEG,locFile] = UiO_trials(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_trials(data_struct,subj_name,EEG,logFile)
 
 if nargin < 2
     error('provide at least data_struct and subject name. See help UiO_trials')
@@ -28,9 +28,9 @@ end
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'preprocessed');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'preprocessed');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 
@@ -110,10 +110,9 @@ elseif str2double(data_struct.trial_rejection) == 2
 
         button = waitforbuttonpress;
         
-        % breaks loop if "e" is pressed
-        val=double(get(h,'CurrentCharacter'));
+       % press 'e' to break the loop
+        val = double(get(gcf,'CurrentCharacter'));
         if val == 101
-            close(h)
             break
         end
         
@@ -133,6 +132,9 @@ elseif str2double(data_struct.trial_rejection) == 2
     EEG.data(:,:,badTrial) = [];
     EEG.epoch(badTrial) = [];
     EEG.accBadEpochs = badTrial;
+elseif str2double(data_struct.trial_rejection) == 0
+    warning('No trials cleaned according to CSV file!')
+    EEG.accBadEpochs = [];
 else
     warning('trial rejection is not accuratly provided in csvfile. Rejection is done automatically')
 end
@@ -140,7 +142,7 @@ end
 disp([ num2str(length(EEG.accBadEpochs)) ' Trials rejected.']);
 
 % loc file entry
-locFile{end+1} = {'epoched',['epoched data from ' data_struct.trial_start 'to ' data_struct.trial_end 'ms. ' ...
+logFile{end+1} = {'epoched',['epoched data from ' data_struct.trial_start 'to ' data_struct.trial_end 'ms. ' ...
     num2str(EEG.accBadEpochs) ' trials are rejected by ' data_struct.trial_rejection ' ' ...
     '(0 = visual inspection; 1 = automatically)']};
 

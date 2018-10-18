@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_pci(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_pci(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the 'after_ica' data (if availeble)
 % subj_name: subject name according to csvfile
-% locFile: locFile of previous function. If empty [] this function will
-%       load the 'after_ica' locFile (if availeble)
+% logFile: logFile of previous function. If empty [] this function will
+%       load the 'after_ica' logFile (if availeble)
 %
 % A function for calculating the Perturbational Complexity Index, given a
 % binary matrix of significant sources of cortical activity, and an
@@ -21,7 +21,7 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 %
-function [EEG,locFile] = UiO_pci(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_pci(data_struct,subj_name,EEG,logFile)
 
 
 if nargin < 2
@@ -31,9 +31,9 @@ end
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'after_inverse_model');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'after_inverse_model');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 
@@ -77,10 +77,10 @@ title(['\fontsize{60} \color{red} PCI = ' num2str(PCI)],'interpreter','tex')
 
 EEG.PCI = PCI;
 
-locFile{end+1} = {'after_pci',['pci is calculated for this dataset and is' num2str(PCI)]};
+logFile{end+1} = {'after_pci',['pci is calculated for this dataset and is' num2str(PCI)]};
 
 if str2double(data_struct.plot_always)==1
-    UiO_plots(data_struct,subj_name,EEG,locFile);
+    UiO_plots(data_struct,subj_name,EEG,logFile);
 end
 
 disp('data PCI is computed')

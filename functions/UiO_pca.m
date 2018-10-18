@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_pca(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_pca(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the last processed data (if availeble)
 % subj_name: subject name according to csvfile
-% locFile: locFile of previous function. If empty [] this function will
-%       load the last processed locFile (if availeble)
+% logFile: logFile of previous function. If empty [] this function will
+%       load the last processed logFile (if availeble)
 %
 % This function will compress the data to 99% of explained variance. This
 % step is important for later ICA-analysis
@@ -19,7 +19,7 @@
 % sevenius.nilsen@gmail.com
 % benjamin.thuerer@kit.edu
 % 
-function [EEG,locFile] = UiO_pca(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_pca(data_struct,subj_name,EEG,logFile)
 
 if nargin < 2
     error('provide at least data_struct and subject name. See help UiO_pca')
@@ -29,9 +29,9 @@ end
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'epoched');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'epoched');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 
@@ -75,11 +75,11 @@ EEG.data = postCompData;
 disp(['Data compressed to ' num2str(EEG.lastPC) ' principal components']);
 
 % loc file entry
-locFile{end+1} = {'after_pca',['data is compressed to ' num2str(EEG.lastPC) ' principal components which explain ' ...
+logFile{end+1} = {'after_pca',['data is compressed to ' num2str(EEG.lastPC) ' principal components which explain ' ...
     '99.9% of the variance']};
 
 if str2double(data_struct.plot_always)==1
-    UiO_plots(data_struct,subj_name,EEG,locFile);
+    UiO_plots(data_struct,subj_name,EEG,logFile);
 end
 
 disp('data PCA is done')

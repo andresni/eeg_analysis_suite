@@ -1,15 +1,15 @@
 % EEG-data processing for EEG-TMS combined
 % Consciousness Study Oslo
 % 
-% [EEG,locFile] = UiO_connectivity(data_struct,subj_name,EEG,locFile)
+% [EEG,logFile] = UiO_connectivity(data_struct,subj_name,EEG,logFile)
 % 
 % data_struct: structure of the csv-file specified for subject and
 %               experiment
 % EEG: EEG structure of previous function. If empty [] this function will
 %       load the 'ica_cleaned' data (if available)
 % subj_name: subject name according to csvfile
-% locFile: locFile of previous function. If empty [] this function will
-%       load the 'ica_cleaned' locFile (if availeble)
+% logFile: logFile of previous function. If empty [] this function will
+%       load the 'ica_cleaned' logFile (if availeble)
 %
 % This function decomposes the EEG data into the time-frequency space using 
 % complex morelt wavelets and computes the phase lag index (PLI), inter
@@ -31,7 +31,7 @@
 % benjamin.thuerer@kit.edu
 %
 
-function [EEG,locFile] = UiO_connectivity(data_struct,subj_name,EEG,locFile)
+function [EEG,logFile] = UiO_connectivity(data_struct,subj_name,EEG,logFile)
 
 
 if nargin < 2
@@ -41,9 +41,9 @@ end
 % check if EEG structure is provided. If not, load previous data
 if isempty(EEG)
     if str2double(data_struct.load_data) == 0
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,'ica_cleaned');   
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,'ica_cleaned');   
     else
-        [EEG,locFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
+        [EEG,logFile] = UiO_load_data(data_struct,subj_name,[],'specific_data');
     end
 end
 
@@ -299,12 +299,12 @@ EEG.data = [];
 
 %%
 % loc file entry
-locFile{end+1} = {'after_connectivity_times',['Connectivity is done between ' num2str(min_f) ' and ' num2str(max_f) ...
+logFile{end+1} = {'after_connectivity_times',['Connectivity is done between ' num2str(min_f) ' and ' num2str(max_f) ...
     ' Hz in logarithmic space with ' num2str(num_freq) ' bins and the number of cycles changed according to the frequency from ' ...
     num2str(low_cycle) ' cycles to ' num2str(high_cycle) ' cycles and connectivity is computed between' num2str(low_pliWindow) ' to ' num2str(high_pliWindow)]};
 
 if str2double(data_struct.plot_always)==1
-    UiO_plots(data_struct,subj_name,EEG,locFile);
+    UiO_plots(data_struct,subj_name,EEG,logFile);
 end
 
 disp('Connectivity analyses are done')
